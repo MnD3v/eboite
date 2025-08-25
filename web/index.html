@@ -34,14 +34,14 @@
   
   <!-- Social preview (Open Graph & Twitter) -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="eBoite">
-  <meta property="og:description" content="Préparation de votre expérience sur eBoite.">
+  <meta property="og:title" content="eBoite - Votre boîte à avis">
+  <meta property="og:description" content="Avec eBoite, donnez la parole à vos équipes et à vos clients. Suggestions, idées, ressentis et améliorations : tout est recueilli de façon simple, anonyme et constructive pour bâtir une organisation plus forte et plus à l’écoute.">
   <meta property="og:image" content="https://i.ibb.co/S74ZSzRv/Chat-GPT-Image-24-juil-2025-17-04-32-2.png">
   <meta property="og:image:alt" content="eBoite - Aperçu">
   <meta property="og:site_name" content="eBoite">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="eBoite">
-  <meta name="twitter:description" content="Préparation de votre expérience sur eBoite.">
+  <meta name="twitter:title" content="eBoite - Votre boîte à avis">
+  <meta name="twitter:description" content="Avec eBoite, donnez la parole à vos équipes et à vos clients. Suggestions, idées, ressentis et améliorations : tout est recueilli de façon simple, anonyme et constructive pour bâtir une organisation plus forte et plus à l’écoute.">
   <meta name="twitter:image" content="https://i.ibb.co/S74ZSzRv/Chat-GPT-Image-24-juil-2025-17-04-32-2.png">
   <meta name="theme-color" content="#FF4D00">
 
@@ -53,7 +53,7 @@
   <script src="flutter.js" defer></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
     * {
       margin: 0;
@@ -92,62 +92,56 @@
       position: relative;
     }
 
-    .logo-circle {
-      width: 120px;
-      height: 120px;
-      background: linear-gradient(135deg, #FF4D00 0%, #FF8A66 100%);
-      border-radius: 50%;
+    .logo-text {
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.2s forwards;
+    }
+
+    .logo-image {
+      width: 200px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      animation: logoFloat 3s ease-in-out infinite 1s;
+    }
+
+    .three-dots {
       display: flex;
-      align-items: center;
       justify-content: center;
-      margin: 0 auto 20px;
-      position: relative;
-      animation: pulse 2s ease-in-out infinite;
-      box-shadow: 0 20px 40px rgba(255, 77, 0, 0.3);
+      gap: 12px;
+      margin-top: 20px;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 1s forwards;
     }
 
-    .logo-circle::before {
-      content: '';
-      position: absolute;
-      width: 140px;
-      height: 140px;
-      border: 3px solid rgba(255, 77, 0, 0.2);
+    .dot {
+      width: 12px;
+      height: 12px;
+      background: #FF4D00;
       border-radius: 50%;
-      animation: ripple 2s ease-in-out infinite;
+      animation: dotPulse 1.5s ease-in-out infinite;
     }
 
-    .logo-circle::after {
-      content: '';
-      position: absolute;
-      width: 160px;
-      height: 160px;
-      border: 2px solid rgba(255, 77, 0, 0.1);
-      border-radius: 50%;
-      animation: ripple 2s ease-in-out infinite 0.5s;
+    .dot:nth-child(1) {
+      animation-delay: 0s;
     }
 
-    .logo-icon {
-      color: white;
-      font-size: 48px;
-      font-weight: 600;
-      animation: bounce 1.5s ease-in-out infinite;
+    .dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: 0.4s;
     }
 
     .loading-text {
       color: #1B1B1B;
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 12px;
+      font-size: 20px;
+      font-weight: 500;
+      margin-top: 30px;
       opacity: 0;
-      animation: fadeInUp 0.8s ease-out 0.3s forwards;
-    }
-
-    .loading-subtitle {
-      color: #ff8400;
-      font-size: 16px;
-      font-weight: 400;
-      opacity: 0;
-      animation: fadeInUp 0.8s ease-out 0.6s forwards;
+      animation: fadeInUp 0.8s ease-out 1.2s forwards;
     }
 
     .progress-bar {
@@ -155,10 +149,10 @@
       height: 4px;
       background: rgba(255, 77, 0, 0.2);
       border-radius: 2px;
-      margin: 30px auto 0;
+      margin: 20px auto 0;
       overflow: hidden;
       opacity: 0;
-      animation: fadeInUp 0.8s ease-out 0.9s forwards;
+      animation: fadeInUp 0.8s ease-out 1.4s forwards;
     }
 
     .progress-fill {
@@ -166,7 +160,7 @@
       background: linear-gradient(90deg, #FF4D00, #FF8A66);
       border-radius: 2px;
       width: 0%;
-      animation: progress 2s ease-in-out infinite;
+      animation: progress 2s ease-in-out infinite 1.6s;
     }
 
     .floating-elements {
@@ -178,55 +172,39 @@
 
     .floating-dot {
       position: absolute;
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
       background: #FF4D00;
       border-radius: 50%;
-      opacity: 0.6;
-      animation: float 6s ease-in-out infinite;
+      opacity: 0.4;
+      animation: float 8s ease-in-out infinite;
     }
 
     .floating-dot:nth-child(1) {
-      top: 20%;
-      left: 15%;
+      top: 15%;
+      left: 10%;
       animation-delay: 0s;
     }
 
     .floating-dot:nth-child(2) {
-      top: 30%;
-      right: 20%;
-      animation-delay: 1s;
-    }
-
-    .floating-dot:nth-child(3) {
-      bottom: 25%;
-      left: 25%;
+      top: 25%;
+      right: 15%;
       animation-delay: 2s;
     }
 
+    .floating-dot:nth-child(3) {
+      bottom: 20%;
+      left: 20%;
+      animation-delay: 4s;
+    }
+
     .floating-dot:nth-child(4) {
-      bottom: 35%;
-      right: 15%;
-      animation-delay: 3s;
+      bottom: 30%;
+      right: 10%;
+      animation-delay: 6s;
     }
 
     /* Animations */
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
-
-    @keyframes ripple {
-      0% { transform: scale(1); opacity: 1; }
-      100% { transform: scale(1.3); opacity: 0; }
-    }
-
-    @keyframes bounce {
-      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-      40% { transform: translateY(-10px); }
-      60% { transform: translateY(-5px); }
-    }
-
     @keyframes fadeInUp {
       from {
         opacity: 0;
@@ -238,6 +216,22 @@
       }
     }
 
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-5px) scale(1.02); }
+    }
+
+    @keyframes dotPulse {
+      0%, 100% { 
+        transform: scale(1);
+        opacity: 0.7;
+      }
+      50% { 
+        transform: scale(1.3);
+        opacity: 1;
+      }
+    }
+
     @keyframes progress {
       0% { width: 0%; }
       50% { width: 70%; }
@@ -246,8 +240,8 @@
 
     @keyframes float {
       0%, 100% { transform: translateY(0px) rotate(0deg); }
-      33% { transform: translateY(-20px) rotate(120deg); }
-      66% { transform: translateY(-10px) rotate(240deg); }
+      33% { transform: translateY(-15px) rotate(120deg); }
+      66% { transform: translateY(-8px) rotate(240deg); }
     }
 
     .fade-out {
@@ -268,25 +262,25 @@
 
     /* Responsive design */
     @media (max-width: 768px) {
-      .logo-circle {
-        width: 100px;
-        height: 100px;
-      }
-      
-      .logo-icon {
-        font-size: 36px;
+      .logo-image {
+        width: 150px;
       }
       
       .loading-text {
-        font-size: 20px;
-      }
-      
-      .loading-subtitle {
-        font-size: 14px;
+        font-size: 16px;
       }
       
       .progress-bar {
         width: 160px;
+      }
+      
+      .three-dots {
+        gap: 8px;
+      }
+      
+      .dot {
+        width: 10px;
+        height: 10px;
       }
     }
   </style>
@@ -303,17 +297,18 @@
     
     <div class="loading-container">
       <div class="logo-container">
-        <div class="logo-circle">
-          <div class="logo-icon"></div>
+        <div class="logo-text">
+          <img src="logo-text.png" alt="eBoite Logo" class="logo-image">
+        </div>
+        <div class="three-dots">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
         </div>
       </div>
       
-      <div class="loading-text">Bienvenue sur eBoite</div>
-      <div class="loading-subtitle">Préparation de votre expérience...</div>
       
-      <div class="progress-bar">
-        <div class="progress-fill"></div>
-      </div>
+    
     </div>
   </div>
 
