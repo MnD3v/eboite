@@ -31,15 +31,295 @@
 
   <title>immobilier_apk</title>
   <link rel="manifest" href="manifest.json">
+  
+  <!-- Social preview (Open Graph & Twitter) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="eBoite">
+  <meta property="og:description" content="Préparation de votre expérience sur eBoite.">
+  <meta property="og:image" content="https://i.ibb.co/S74ZSzRv/Chat-GPT-Image-24-juil-2025-17-04-32-2.png">
+  <meta property="og:image:alt" content="eBoite - Aperçu">
+  <meta property="og:site_name" content="eBoite">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="eBoite">
+  <meta name="twitter:description" content="Préparation de votre expérience sur eBoite.">
+  <meta name="twitter:image" content="https://i.ibb.co/S74ZSzRv/Chat-GPT-Image-24-juil-2025-17-04-32-2.png">
+  <meta name="theme-color" content="#FF4D00">
 
   <script>
     // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "2039610134";
+    const serviceWorkerVersion = "403505513";
   </script>
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+    }
+
+    /* Loading screen styles */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #FFF6EE 0%, #FFE8E0 50%, #FFD0C2 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .loading-container {
+      text-align: center;
+      position: relative;
+    }
+
+    .logo-container {
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .logo-circle {
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(135deg, #FF4D00 0%, #FF8A66 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      position: relative;
+      animation: pulse 2s ease-in-out infinite;
+      box-shadow: 0 20px 40px rgba(255, 77, 0, 0.3);
+    }
+
+    .logo-circle::before {
+      content: '';
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border: 3px solid rgba(255, 77, 0, 0.2);
+      border-radius: 50%;
+      animation: ripple 2s ease-in-out infinite;
+    }
+
+    .logo-circle::after {
+      content: '';
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      border: 2px solid rgba(255, 77, 0, 0.1);
+      border-radius: 50%;
+      animation: ripple 2s ease-in-out infinite 0.5s;
+    }
+
+    .logo-icon {
+      color: white;
+      font-size: 48px;
+      font-weight: 600;
+      animation: bounce 1.5s ease-in-out infinite;
+    }
+
+    .loading-text {
+      color: #1B1B1B;
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.3s forwards;
+    }
+
+    .loading-subtitle {
+      color: #ff8400;
+      font-size: 16px;
+      font-weight: 400;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.6s forwards;
+    }
+
+    .progress-bar {
+      width: 200px;
+      height: 4px;
+      background: rgba(255, 77, 0, 0.2);
+      border-radius: 2px;
+      margin: 30px auto 0;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.9s forwards;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FF4D00, #FF8A66);
+      border-radius: 2px;
+      width: 0%;
+      animation: progress 2s ease-in-out infinite;
+    }
+
+    .floating-elements {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .floating-dot {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #FF4D00;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .floating-dot:nth-child(1) {
+      top: 20%;
+      left: 15%;
+      animation-delay: 0s;
+    }
+
+    .floating-dot:nth-child(2) {
+      top: 30%;
+      right: 20%;
+      animation-delay: 1s;
+    }
+
+    .floating-dot:nth-child(3) {
+      bottom: 25%;
+      left: 25%;
+      animation-delay: 2s;
+    }
+
+    .floating-dot:nth-child(4) {
+      bottom: 35%;
+      right: 15%;
+      animation-delay: 3s;
+    }
+
+    /* Animations */
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes ripple {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(1.3); opacity: 0; }
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-10px); }
+      60% { transform: translateY(-5px); }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes progress {
+      0% { width: 0%; }
+      50% { width: 70%; }
+      100% { width: 100%; }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-20px) rotate(120deg); }
+      66% { transform: translateY(-10px) rotate(240deg); }
+    }
+
+    .fade-out {
+      opacity: 0;
+      transform: scale(0.95);
+      pointer-events: none;
+    }
+
+    /* Hide Flutter app initially */
+    #flutter-app {
+      opacity: 0;
+      transition: opacity 1s ease-in;
+    }
+
+    #flutter-app.loaded {
+      opacity: 1;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .logo-circle {
+        width: 100px;
+        height: 100px;
+      }
+      
+      .logo-icon {
+        font-size: 36px;
+      }
+      
+      .loading-text {
+        font-size: 20px;
+      }
+      
+      .loading-subtitle {
+        font-size: 14px;
+      }
+      
+      .progress-bar {
+        width: 160px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="floating-elements">
+      <div class="floating-dot"></div>
+      <div class="floating-dot"></div>
+      <div class="floating-dot"></div>
+      <div class="floating-dot"></div>
+    </div>
+    
+    <div class="loading-container">
+      <div class="logo-container">
+        <div class="logo-circle">
+          <div class="logo-icon"></div>
+        </div>
+      </div>
+      
+      <div class="loading-text">Bienvenue sur eBoite</div>
+      <div class="loading-subtitle">Préparation de votre expérience...</div>
+      
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flutter App Container -->
+  <div id="flutter-app"></div>
+
   <script>
     window.addEventListener('load', function(ev) {
       // Download main.dart.js
@@ -49,7 +329,23 @@
         },
         onEntrypointLoaded: function(engineInitializer) {
           engineInitializer.initializeEngine().then(function(appRunner) {
+            // Hide loading screen and show Flutter app
+            const loadingScreen = document.getElementById('loading-screen');
+            const flutterApp = document.getElementById('flutter-app');
+            
+            // Fade out loading screen with scale effect
+            loadingScreen.classList.add('fade-out');
+            
+            // Show Flutter app
+            flutterApp.classList.add('loaded');
+            
+            // Run the Flutter app
             appRunner.runApp();
+            
+            // Remove loading screen after transition
+            setTimeout(() => {
+              loadingScreen.style.display = 'none';
+            }, 800);
           });
         }
       });

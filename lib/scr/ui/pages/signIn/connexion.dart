@@ -92,7 +92,7 @@ class Connexion extends StatelessWidget {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 return SingleChildScrollView(
-                  padding: EdgeInsets.all(isLargeScreen ? 32 : 24),
+                  padding: EdgeInsets.all(isLargeScreen ? 24 : 24),
                   child: Center(
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
@@ -102,10 +102,7 @@ class Connexion extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           // Espacement adaptatif pour centrer verticalement sur grands écrans
-                          if (isLargeScreen) 
-                            SizedBox(height: screenHeight * 0.1)
-                          else
-                            0.h,
+                       
                           
                           // Logo et titre
                           Container(
@@ -125,29 +122,14 @@ class Connexion extends StatelessWidget {
                             child: Column(
                               children: [
                                 // Logo avec effet de profondeur
-                                Container(
-                                  padding: EdgeInsets.all(isLargeScreen ? 28 : 20),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.color500.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(isLargeScreen ? 24 : 20),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppColors.color500.withOpacity(0.2),
-                                        blurRadius: 15,
-                                        offset: Offset(0, 8),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Hero(
-                                    tag: "launch_icon",
-                                    child: Image(
-                                      image: AssetImage(Assets.icons("logo.png")),
-                                      height: isLargeScreen ? 80 : 60,
-                                    ),
+                                Hero(
+                                  tag: "launch_icon",
+                                  child: Image(
+                                    image: AssetImage(Assets.icons("logo.png")),
+                                    height:  60,
                                   ),
                                 ),
                                 
-                                (isLargeScreen ? 32 : 24).h,
                                 
                                 // Titre principal
                                 Text(
