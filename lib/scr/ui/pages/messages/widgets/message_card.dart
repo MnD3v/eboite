@@ -275,7 +275,7 @@ class MessageCard extends StatelessWidget {
 
 Map<String, Color> categorieColors = {
   "suggestion": Colors.green,
-  "plainte": Colors.red,
-  "idée": Color(0xff4cc9f0),
-  "appréciation": Colors.teal
+  "plainte": const Color.fromARGB(255, 255, 17, 0),
+  "idée": Color.fromARGB(255, 0, 79, 206),
+  "appréciation": const Color.fromARGB(255, 0, 150, 55)
 };

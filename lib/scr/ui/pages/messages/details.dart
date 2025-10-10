@@ -180,7 +180,7 @@ class MessageDetails extends StatelessWidget {
           Row(
             children: [
               Icon(
-                Icons.message_outlined,
+                CupertinoIcons.bubble_left,
                 color: Colors.grey[600],
                 size: 20,
               ),
@@ -199,7 +199,7 @@ class MessageDetails extends StatelessWidget {
           Text(
             message.message,
             style: TextStyle(
-              color: Colors.grey[800],
+              color: Colors.black,
               fontSize: 16,
               fontWeight: FontWeight.w400,
               height: 1.5,
@@ -321,7 +321,7 @@ class MessageDetails extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: () => _showDeleteDialog(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red[500],
+                backgroundColor: Colors.red,
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
@@ -394,7 +394,7 @@ class MessageDetails extends StatelessWidget {
 
 Map<String, Color> categorieColors = {
   "suggestion": Colors.green,
-  "plainte": Colors.red,
-  "idée": Color(0xff4cc9f0),
-  "appréciation": Colors.teal
+  "plainte": const Color.fromARGB(255, 255, 17, 0),
+  "idée": Color.fromARGB(255, 0, 79, 206),
+  "appréciation": const Color.fromARGB(255, 0, 150, 55)
 };

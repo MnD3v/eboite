@@ -16,13 +16,10 @@ class Statistiques extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage(Assets.image("bg.png")),
-          fit: BoxFit.cover,
-        ),
+        color: Colors.white,
       ),
       child: EScaffold(
-        color: Colors.transparent,
+        color: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,

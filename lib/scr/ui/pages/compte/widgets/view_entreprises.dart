@@ -21,13 +21,10 @@ class ViewUser extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage(Assets.image("bg.png")),
-          fit: BoxFit.cover,
-        ),
+        color: Colors.white,
       ),
       child: EScaffold(
-        color: Colors.transparent,
+        color: Colors.white,
         appBar: _buildAppBar(),
         body: utilisateur.entreprises.isEmpty
             ? _buildEmptyState()
@@ -348,8 +345,8 @@ class ViewUser extends StatelessWidget {
                           index: utilisateur.entreprises.indexOf(element),
                           id: element.id,
                           nom: element.nom,
-                          selectedItems: element.categories.obs,
-                          sieges: element.sieges.obs,
+                          selectedItems: RxList(element.categories),
+                          sieges: RxList(element.sieges),
                           user: utilisateur,
                         ));
                       },
