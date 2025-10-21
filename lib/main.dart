@@ -178,13 +178,7 @@ void main() async {
   });
  }
 
-  var user = FirebaseAuth.instance.currentUser;
-  if (user.isNotNul) {
-   
-      await Utilisateur.getUser(user!.email!);
-    
-    // verifyPaiements();
-  }
+
 
   Paygate.init(
   apiKey: '13c195ab-00aa-41a5-a8a5-5668cd77a623',
