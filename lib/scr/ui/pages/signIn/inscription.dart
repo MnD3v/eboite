@@ -1,9 +1,12 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:immobilier_apk/scr/config/app/export.dart';
 import 'package:immobilier_apk/scr/ui/pages/home_page.dart';
 import 'package:immobilier_apk/scr/ui/pages/signIn/connexion.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:my_widgets/my_widgets.dart';
 
 class Inscription extends StatelessWidget {
   Inscription({
@@ -25,523 +28,661 @@ class Inscription extends StatelessWidget {
 
   var isLoading = false.obs;
 
-  var country = "TG";
-
   @override
   Widget build(BuildContext context) {
-    var phoneScallerFactor = MediaQuery.of(context).textScaleFactor;
     var screenWidth = MediaQuery.of(context).size.width;
-    var screenHeight = MediaQuery.of(context).size.height;
     var isLargeScreen = screenWidth > 800;
-    var isMediumScreen = screenWidth > 600 && screenWidth <= 800;
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.color500.withOpacity(0.1),
-            AppColors.color500.withOpacity(0.05),
-          ],
-        ),
-      ),
-      child: EScaffold(
-        appBar: AppBar(
-          title: Text(
-            "Inscription",
-            style: TextStyle(
-              fontSize: isLargeScreen ? 28 : 24,
-              fontWeight: FontWeight.w700,
-              color: Colors.grey[800],
-            ),
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          actions: [
-            Container(
-              margin: EdgeInsets.only(right: 16),
-              child: TextButton(
-                onPressed: () {
-                  Get.back();
-                  Get.to(
-                      Connexion(
-                        // function: function,
-                      ),
-                      duration: 333.milliseconds,
-                      transition: Transition.rightToLeftWithFade,
-                      fullscreenDialog: true);
-                },
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isLargeScreen ? 24 : 20, 
-                    vertical: isLargeScreen ? 16 : 12
-                  ),
-                  backgroundColor: AppColors.color500.withOpacity(0.1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+    return Scaffold(
+      backgroundColor: Colors.grey[50],
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            child: Container(
+              width: double.infinity,
+              alignment: Alignment.center,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: isLargeScreen ? 400 : double.infinity,
                 ),
-                child: Text(
-                  "Connexion",
-                  style: TextStyle(
-                    fontSize: isLargeScreen ? 18 : 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.color500,
-                  ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Logo et branding
+                    _buildHeader(),
+                    
+                    48.h,
+                    
+                    // Formulaire d'inscription
+                    _buildSignupForm(context),
+                    
+                    32.h,
+                    
+                    // Lien connexion
+                    _buildLoginLink(),
+                    
+                    24.h,
+                    
+                    // Sécurité
+                    _buildSecurityNote(),
+                  ],
                 ),
               ),
-            ),
-          ],
-        ),
-        body: Obx(
-          () => IgnorePointer(
-            ignoring: isLoading.value,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return SingleChildScrollView(
-                  padding: EdgeInsets.all(isLargeScreen ? 32 : 24),
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: isLargeScreen ? 500 : double.infinity,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          // Espacement adaptatif pour centrer verticalement sur grands écrans
-                     
-                          
-                          // Logo et titre
-                          Container(
-                            padding: EdgeInsets.all(isLargeScreen ? 40 : 32),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(isLargeScreen ? 28 : 24),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 20,
-                                  offset: Offset(0, 10),
-                                  spreadRadius: 0,
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                // Logo avec effet de profondeur
-                                Hero(
-                                  tag: "launch_icon",
-                                  child: Image(
-                                    image: AssetImage(Assets.icons("account_2.png")),
-                                    height: isLargeScreen ? 80 : 60,
-                                  ),
-                                ),
-                                
-                                
-                                // Titre principal
-                                Text(
-                                  "M'inscrire",
-                                  style: TextStyle(
-                                    fontSize: isLargeScreen ? 32 : 28,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.grey[800],
-                                  ),
-                                ),
-                                
-                                (isLargeScreen ? 12 : 8).h,
-                                
-                                // Sous-titre
-                                Text(
-                                  'Créez votre compte eBoite',
-                                  style: TextStyle(
-                                    fontSize: isLargeScreen ? 18 : 16,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          
-                          (isLargeScreen ? 40 : 32).h,
-                          
-                          // Formulaire d'inscription
-                          Container(
-                            padding: EdgeInsets.all(isLargeScreen ? 32 : 24),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(isLargeScreen ? 28 : 24),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 20,
-                                  offset: Offset(0, 10),
-                                  spreadRadius: 0,
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                // Champ nom
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[50],
-                                    borderRadius: BorderRadius.circular(isLargeScreen ? 18 : 16),
-                                    border: Border.all(
-                                      color: Colors.grey[200]!,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: TextField(
-                                    onChanged: (value) {
-                                      utilisateur.nom = value;
-                                    },
-                                    style: TextStyle(
-                                      fontSize: isLargeScreen ? 18 : 16,
-                                    ),
-                                    decoration: InputDecoration(
-                                      hintText: "Votre nom",
-                                      hintStyle: TextStyle(
-                                        color: Colors.grey[500],
-                                        fontSize: isLargeScreen ? 18 : 16,
-                                      ),
-                                      border: InputBorder.none,
-                                      contentPadding: EdgeInsets.symmetric(
-                                        horizontal: isLargeScreen ? 24 : 20,
-                                        vertical: isLargeScreen ? 20 : 16,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                
-                                (isLargeScreen ? 24 : 20).h,
-                                
-                                // Champ prénom
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[50],
-                                    borderRadius: BorderRadius.circular(isLargeScreen ? 18 : 16),
-                                    border: Border.all(
-                                      color: Colors.grey[200]!,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: TextField(
-                                    onChanged: (value) {
-                                      utilisateur.prenom = value;
-                                    },
-                                    style: TextStyle(
-                                      fontSize: isLargeScreen ? 18 : 16,
-                                    ),
-                                    decoration: InputDecoration(
-                                      hintText: "Votre prénom",
-                                      hintStyle: TextStyle(
-                                        color: Colors.grey[500],
-                                        fontSize: isLargeScreen ? 18 : 16,
-                                      ),
-                                      border: InputBorder.none,
-                                      contentPadding: EdgeInsets.symmetric(
-                                        horizontal: isLargeScreen ? 24 : 20,
-                                        vertical: isLargeScreen ? 20 : 16,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                
-                                (isLargeScreen ? 24 : 20).h,
-                                
-                                // Champ téléphone
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[50],
-                                    borderRadius: BorderRadius.circular(isLargeScreen ? 18 : 16),
-                                    border: Border.all(
-                                      color: Colors.grey[200]!,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(isLargeScreen ? 20 : 16),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.color500.withOpacity(0.1),
-                                          borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(isLargeScreen ? 18 : 16),
-                                            bottomLeft: Radius.circular(isLargeScreen ? 18 : 16),
-                                          ),
-                                        ),
-                                        child: ChooseCountryCode(
-                                          onChanged: (value) {
-                                            utilisateur.telephone.indicatif = value.dialCode!;
-                                          },
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: TextField(
-                                          keyboardType: TextInputType.phone,
-                                          onChanged: (value) {
-                                            utilisateur.telephone.numero = value;
-                                          },
-                                          style: TextStyle(
-                                            fontSize: isLargeScreen ? 18 : 16,
-                                          ),
-                                          decoration: InputDecoration(
-                                            hintText: "Votre numéro de téléphone",
-                                            hintStyle: TextStyle(
-                                              color: Colors.grey[500],
-                                              fontSize: isLargeScreen ? 18 : 16,
-                                            ),
-                                            border: InputBorder.none,
-                                            contentPadding: EdgeInsets.symmetric(
-                                              horizontal: isLargeScreen ? 24 : 20,
-                                              vertical: isLargeScreen ? 20 : 16,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                
-                                (isLargeScreen ? 24 : 20).h,
-                                
-                                // Champ mot de passe
-                                Obx(
-                                  () => Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[50],
-                                      borderRadius: BorderRadius.circular(isLargeScreen ? 18 : 16),
-                                      border: Border.all(
-                                        color: Colors.grey[200]!,
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: TextField(
-                                            obscureText: passvisible_1.value,
-                                            onChanged: (value) {
-                                              utilisateur.password = value;
-                                            },
-                                            style: TextStyle(
-                                              fontSize: isLargeScreen ? 18 : 16,
-                                            ),
-                                            decoration: InputDecoration(
-                                              hintText: "Votre mot de passe",
-                                              hintStyle: TextStyle(
-                                                color: Colors.grey[500],
-                                                fontSize: isLargeScreen ? 18 : 16,
-                                              ),
-                                              border: InputBorder.none,
-                                              contentPadding: EdgeInsets.symmetric(
-                                                horizontal: isLargeScreen ? 24 : 20,
-                                                vertical: isLargeScreen ? 20 : 16,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          padding: EdgeInsets.all(isLargeScreen ? 20 : 16),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.color500.withOpacity(0.1),
-                                            borderRadius: BorderRadius.only(
-                                              topRight: Radius.circular(isLargeScreen ? 18 : 16),
-                                              bottomRight: Radius.circular(isLargeScreen ? 18 : 16),
-                                            ),
-                                          ),
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              passvisible_1.value = !passvisible_1.value;
-                                            },
-                                            child: Icon(
-                                              !passvisible_1.value
-                                                  ? CupertinoIcons.eye_slash_fill
-                                                  : CupertinoIcons.eye_fill,
-                                              color: AppColors.color500,
-                                              size: isLargeScreen ? 24 : 20,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                
-                                (isLargeScreen ? 24 : 20).h,
-                                
-                                // Champ répétition mot de passe
-                                Obx(
-                                  () => Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[50],
-                                      borderRadius: BorderRadius.circular(isLargeScreen ? 18 : 16),
-                                      border: Border.all(
-                                        color: Colors.grey[200]!,
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: TextField(
-                                            obscureText: passvisible_2.value,
-                                            onChanged: (value) {
-                                              repeatPass = value;
-                                            },
-                                            style: TextStyle(
-                                              fontSize: isLargeScreen ? 18 : 16,
-                                            ),
-                                            decoration: InputDecoration(
-                                              hintText: "Répéter votre mot de passe",
-                                              hintStyle: TextStyle(
-                                                color: Colors.grey[500],
-                                                fontSize: isLargeScreen ? 18 : 16,
-                                              ),
-                                              border: InputBorder.none,
-                                              contentPadding: EdgeInsets.symmetric(
-                                                horizontal: isLargeScreen ? 24 : 20,
-                                                vertical: isLargeScreen ? 20 : 16,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          padding: EdgeInsets.all(isLargeScreen ? 20 : 16),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.color500.withOpacity(0.1),
-                                            borderRadius: BorderRadius.only(
-                                              topRight: Radius.circular(isLargeScreen ? 18 : 16),
-                                              bottomRight: Radius.circular(isLargeScreen ? 18 : 16),
-                                            ),
-                                          ),
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              passvisible_2.value = !passvisible_2.value;
-                                            },
-                                            child: Icon(
-                                              !passvisible_2.value
-                                                  ? CupertinoIcons.eye_slash_fill
-                                                  : CupertinoIcons.eye_fill,
-                                              color: AppColors.color500,
-                                              size: isLargeScreen ? 24 : 20,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                
-                                (isLargeScreen ? 40 : 32).h,
-                                
-                                // Bouton d'inscription
-                                Container(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    onPressed: () async {
-                                      FocusManager.instance.primaryFocus?.unfocus();
-                                      if (IsNullString(utilisateur.nom) ||
-                                          IsNullString(utilisateur.prenom) ||
-                                          !GFunctions.isPhoneNumber(
-                                              country: utilisateur.telephone.indicatif,
-                                              numero: utilisateur.telephone.numero) ||
-                                          utilisateur.password.length < 6 ||
-                                          utilisateur.password != repeatPass) {
-                                        inscriptionProblemesDialog();
-                                      } else {
-                                        try {
-                                          isLoading.value = true;
-
-                                          try {
-                                            await FirebaseAuth.instance
-                                                .createUserWithEmailAndPassword(
-                                              email:
-                                                  "${utilisateur.telephone.numero}@gmail.com",
-                                              password: utilisateur.password,
-                                            );
-                                            utilisateur.country = country;
-                                            await Utilisateur.setUser(utilisateur);
-
-                                            isLoading.value = false;
-
-                                            Get.off(HomePage());
-                                            Toasts.success(context,
-                                                description:
-                                                    "Vous vous êtes connecté avec succès");
-                                                Utilisateur.refreshToken();
-                                            waitAfter(1000, () {
-                                              function();
-                                            });
-                                          } on FirebaseAuthException catch (e) {
-                                            if (e.code == 'email-already-in-use') {
-                                              Custom.showDialog(
-                                                const WarningWidget(
-                                                  message:
-                                                      "Numero déjà utilisé. Veuillez vous connecter !",
-                                                ),
-                                              );
-                                              isLoading.value = false;
-                                            }
-                                          }
-                                        } on Exception {
-                                          Custom.showDialog(const WarningWidget(
-                                            message:
-                                                "Une erreur s'est produite. veuillez verifier votre connexion internet",
-                                          ));
-                                          isLoading.value = false;
-                                        }
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.color500,
-                                      foregroundColor: Colors.white,
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: isLargeScreen ? 22 : 18
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(isLargeScreen ? 18 : 16),
-                                      ),
-                                      elevation: 3,
-                                    ),
-                                    child: Obx(
-                                      () => isLoading.value
-                                          ? SizedBox(
-                                              height: isLargeScreen ? 30 : 25,
-                                              width: isLargeScreen ? 30 : 25,
-                                              child: CircularProgressIndicator(
-                                                color: Colors.white,
-                                                strokeWidth: 1.3,
-                                              ),
-                                            )
-                                          : Text(
-                                              "M'inscrire",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: isLargeScreen ? 18 : 16,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          
-                          (isLargeScreen ? 60 : 40).h,
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
             ),
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildHeader() {
+    return Column(
+      children: [
+        // Logo
+      ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Image(
+            image: AssetImage(Assets.icons("logo-text.png")),
+            fit: BoxFit.contain,
+            height: 30,
+          ),
+        ),
+        
+        24.h,
+        
+        // Titre
+        Text(
+          'Créer un compte',
+          style: TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.w700,
+            color: Colors.grey[900],
+            letterSpacing: -0.5,
+          ),
+        ),
+        
+        8.h,
+        
+        // Sous-titre
+        Text(
+          'Rejoignez eBoite dès aujourd\'hui',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey[600],
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSignupForm(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.grey[200]!,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 20,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Champ nom
+          _buildNameField(),
+          
+          24.h,
+          
+          // Champ prénom
+          _buildFirstNameField(),
+          
+          24.h,
+          
+          // Champ email
+          _buildEmailField(),
+          
+          24.h,
+          
+          // Champ téléphone
+          _buildPhoneField(),
+          
+          24.h,
+          
+          // Champ mot de passe
+          _buildPasswordField(),
+          
+          24.h,
+          
+          // Champ répétition mot de passe
+          _buildConfirmPasswordField(),
+          
+          32.h,
+          
+          // Bouton d'inscription
+          _buildSignupButton(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNameField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Nom',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[700],
+          ),
+        ),
+        
+        8.h,
+        
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.grey[200]!,
+              width: 1,
+            ),
+          ),
+          child: TextField(
+            onChanged: (value) {
+              utilisateur.nom = value;
+            },
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey[900],
+            ),
+            decoration: InputDecoration(
+              hintText: "Entrez votre nom",
+              hintStyle: TextStyle(
+                color: Colors.grey[500],
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFirstNameField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Prénom',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[700],
+          ),
+        ),
+        
+        8.h,
+        
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.grey[200]!,
+              width: 1,
+            ),
+          ),
+          child: TextField(
+            onChanged: (value) {
+              utilisateur.prenom = value;
+            },
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey[900],
+            ),
+            decoration: InputDecoration(
+              hintText: "Entrez votre prénom",
+              hintStyle: TextStyle(
+                color: Colors.grey[500],
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmailField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Adresse email',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[700],
+          ),
+        ),
+        
+        8.h,
+        
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.grey[200]!,
+              width: 1,
+            ),
+          ),
+          child: TextField(
+            keyboardType: TextInputType.emailAddress,
+            onChanged: (value) {
+              utilisateur.email = value;
+            },
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey[900],
+            ),
+            decoration: InputDecoration(
+              hintText: "Entrez votre adresse email",
+              hintStyle: TextStyle(
+                color: Colors.grey[500],
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
+              prefixIcon: Icon(
+                Icons.email_outlined,
+                color: Colors.grey[600],
+                size: 20,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPhoneField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Numéro de téléphone',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[700],
+          ),
+        ),
+        
+        8.h,
+        
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.grey[200]!,
+              width: 1,
+            ),
+          ),
+          child: TextField(
+            keyboardType: TextInputType.phone,
+            onChanged: (value) {
+              utilisateur.telephone.numero = value;
+            },
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey[900],
+            ),
+            decoration: InputDecoration(
+              hintText: "Entrez votre numéro complet (ex: +22890123456)",
+              hintStyle: TextStyle(
+                color: Colors.grey[500],
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
+              prefixIcon: Icon(
+                Icons.phone_outlined,
+                color: Colors.grey[600],
+                size: 20,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPasswordField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Mot de passe',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[700],
+          ),
+        ),
+        
+        8.h,
+        
+        Obx(
+          () => Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.grey[200]!,
+                width: 1,
+              ),
+            ),
+            child: TextField(
+              obscureText: passvisible_1.value,
+              onChanged: (value) {
+                utilisateur.password = value;
+              },
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[900],
+              ),
+              decoration: InputDecoration(
+                hintText: "Entrez votre mot de passe",
+                hintStyle: TextStyle(
+                  color: Colors.grey[500],
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
+                suffixIcon: GestureDetector(
+                  onTap: () {
+                    passvisible_1.value = !passvisible_1.value;
+                  },
+                  child: Icon(
+                    passvisible_1.value
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                    color: Colors.grey[600],
+                    size: 20,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildConfirmPasswordField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Confirmer le mot de passe',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[700],
+          ),
+        ),
+        
+        8.h,
+        
+        Obx(
+          () => Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.grey[200]!,
+                width: 1,
+              ),
+            ),
+            child: TextField(
+              obscureText: passvisible_2.value,
+              onChanged: (value) {
+                repeatPass = value;
+              },
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[900],
+              ),
+              decoration: InputDecoration(
+                hintText: "Répétez votre mot de passe",
+                hintStyle: TextStyle(
+                  color: Colors.grey[500],
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
+                suffixIcon: GestureDetector(
+                  onTap: () {
+                    passvisible_2.value = !passvisible_2.value;
+                  },
+                  child: Icon(
+                    passvisible_2.value
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                    color: Colors.grey[600],
+                    size: 20,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSignupButton(BuildContext context) {
+    return Obx(
+      () => Container(
+        width: double.infinity,
+        height: 52,
+        child: ElevatedButton(
+          onPressed: isLoading.value ? null : () => _handleSignup(context),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.grey[900],
+            foregroundColor: Colors.white,
+            disabledBackgroundColor: Colors.grey[300],
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            elevation: 0,
+          ),
+          child: isLoading.value
+              ? LoadingAnimationWidget.threeRotatingDots(
+                  color: Colors.white,
+                  size: 24,
+                )
+              : Text(
+                  'Créer mon compte',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoginLink() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Déjà un compte ? ',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[600],
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            Get.back();
+            Get.to(
+              Connexion(),
+              duration: 333.milliseconds,
+              transition: Transition.rightToLeftWithFade,
+              fullscreenDialog: true,
+            );
+          },
+          child: Text(
+            'Se connecter',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[900],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSecurityNote() {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.security_outlined,
+            color: Colors.grey[600],
+            size: 20,
+          ),
+          12.w,
+          Expanded(
+            child: Text(
+              'Vos informations sont sécurisées et protégées',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleSignup(BuildContext context) async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    
+    if (IsNullString(utilisateur.nom) ||
+        IsNullString(utilisateur.prenom) ||
+        IsNullString(utilisateur.email) ||
+        !GFunctions.isEmail(utilisateur.email) ||
+        IsNullString(utilisateur.telephone.numero) ||
+        utilisateur.password.length < 6 ||
+        utilisateur.password != repeatPass) {
+      inscriptionProblemesDialog();
+      return;
+    }
+
+    isLoading.value = true;
+    
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: utilisateur.email,
+        password: utilisateur.password,
+      );
+      
+      await Utilisateur.setUser(utilisateur);
+      
+      isLoading.value = false;
+      
+      Get.off(HomePage());
+      Toasts.success(context, description: "Compte créé avec succès");
+      Utilisateur.refreshToken();
+      
+      waitAfter(1000, () {
+        function();
+      });
+      
+    } on FirebaseAuthException catch (e) {
+      isLoading.value = false;
+      
+      if (e.code == 'email-already-in-use') {
+        Custom.showDialog(
+          const WarningWidget(
+            message: "Cette adresse email est déjà utilisée. Veuillez vous connecter !",
+          ),
+        );
+      } else if (e.code == 'invalid-email') {
+        Custom.showDialog(
+          const WarningWidget(
+            message: "Adresse email invalide",
+          ),
+        );
+      }
+    } on Exception {
+      isLoading.value = false;
+      Custom.showDialog(const WarningWidget(
+        message: "Une erreur s'est produite.\nVérifiez votre connexion internet",
+      ));
+    }
   }
 
   inscriptionProblemesDialog() {
@@ -634,10 +775,14 @@ class Inscription extends StatelessWidget {
       problems.add(_buildProblemItem('Veuillez saisir votre prénom', isLargeScreen));
     }
     
-    if (!GFunctions.isPhoneNumber(
-        country: utilisateur.telephone.indicatif,
-        numero: utilisateur.telephone.numero)) {
-      problems.add(_buildProblemItem('Veuillez saisir un numéro valide', isLargeScreen));
+    if (IsNullString(utilisateur.email)) {
+      problems.add(_buildProblemItem('Veuillez saisir votre adresse email', isLargeScreen));
+    } else if (!GFunctions.isEmail(utilisateur.email)) {
+      problems.add(_buildProblemItem('Veuillez saisir une adresse email valide', isLargeScreen));
+    }
+    
+    if (IsNullString(utilisateur.telephone.numero)) {
+      problems.add(_buildProblemItem('Veuillez saisir votre numéro de téléphone', isLargeScreen));
     }
     
     if (utilisateur.password.length < 6) {
@@ -687,3 +832,4 @@ class Inscription extends StatelessWidget {
     );
   }
 }
+

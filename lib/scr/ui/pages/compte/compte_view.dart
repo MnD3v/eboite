@@ -11,7 +11,6 @@ class Compte extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var screenWidth = MediaQuery.of(context).size.width;
-    var screenHeight = MediaQuery.of(context).size.height;
     var isLargeScreen = screenWidth > 1200;
     var isMediumScreen = screenWidth > 800 && screenWidth <= 1200;
     
@@ -25,13 +24,11 @@ class Compte extends StatelessWidget {
           backgroundColor: Colors.transparent,
           surfaceTintColor: Colors.transparent,
           elevation: 0,
-          title: Text(
+          title: EText(
             "Mon compte",
-            style: TextStyle(
-              fontSize: isLargeScreen ? 28 : 24,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
+            size: 22,
+            font: Fonts.poppinsBold,
+            weight: FontWeight.w700,
           ),
           actions: [
             Container(
@@ -53,54 +50,95 @@ class Compte extends StatelessWidget {
           builder: (context, constraints) {
             return SingleChildScrollView(
               padding: EdgeInsets.symmetric(
-                horizontal: isLargeScreen ? 40 : 20,
-                vertical: isLargeScreen ? 32 : 24,
+                horizontal: isLargeScreen ? 48 : isMediumScreen ? 32 : 20,
+                vertical: isLargeScreen ? 40 : isMediumScreen ? 28 : 24,
               ),
               child: Center(
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    maxWidth: isLargeScreen ? 800 : double.infinity,
+                    maxWidth: isLargeScreen ? 1200 : isMediumScreen ? 900 : double.infinity,
                   ),
-                  child: Column(
-                    children: [
-                      // Espacement adaptatif pour centrer verticalement sur grands écrans
-                      if (isLargeScreen) 
-                        SizedBox(height: screenHeight * 0.05)
-                      else
-                        0.h,
-                      
-                      // Section profil utilisateur
-                      _buildProfileSection(isLargeScreen, isMediumScreen),
-                      
-                      (isLargeScreen ? 32 : 24).h,
-                      
-                      // Section entreprises
-                      _buildEntreprisesSection(isLargeScreen, isMediumScreen),
-                      
-                      (isLargeScreen ? 40 : 32).h,
-                      
-                      // Section plus
-                      _buildPlusSection(isLargeScreen, isMediumScreen),
-                      
-                      (isLargeScreen ? 40 : 32).h,
-                      
-                      // Section déconnexion
-                      _buildLogoutSection(context, isLargeScreen),
-                      
-                      (isLargeScreen ? 60 : 40).h,
-                      
-                      // Footer
-                      _buildFooter(isLargeScreen),
-                      
-                      (isLargeScreen ? 60 : 40).h,
-                    ],
-                  ),
+                  child: isLargeScreen 
+                    ? _buildLargeScreenLayout(isLargeScreen, isMediumScreen, context)
+                    : _buildMobileLayout(isLargeScreen, isMediumScreen, context),
                 ),
               ),
             );
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildLargeScreenLayout(bool isLargeScreen, bool isMediumScreen, BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Colonne gauche - Profil et Plus
+        Expanded(
+          flex: 2,
+          child: Column(
+            children: [
+              _buildProfileSection(isLargeScreen, isMediumScreen),
+              
+              (isLargeScreen ? 32 : 24).h,
+              
+              _buildPlusSection(isLargeScreen, isMediumScreen),
+              
+              (isLargeScreen ? 40 : 32).h,
+              
+              _buildLogoutSection(context, isLargeScreen),
+            ],
+          ),
+        ),
+        
+        (isLargeScreen ? 32 : 24).w,
+        
+        // Colonne droite - Entreprises et Footer
+        Expanded(
+          flex: 2,
+          child: Column(
+            children: [
+              _buildEntreprisesSection(isLargeScreen, isMediumScreen),
+              
+              (isLargeScreen ? 40 : 32).h,
+              
+              _buildFooter(isLargeScreen),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMobileLayout(bool isLargeScreen, bool isMediumScreen, BuildContext context) {
+    return Column(
+      children: [
+        // Section profil utilisateur
+        _buildProfileSection(isLargeScreen, isMediumScreen),
+        
+        (isLargeScreen ? 32 : 24).h,
+        
+        // Section entreprises
+        _buildEntreprisesSection(isLargeScreen, isMediumScreen),
+        
+        (isLargeScreen ? 40 : 32).h,
+        
+        // Section plus
+        _buildPlusSection(isLargeScreen, isMediumScreen),
+        
+        (isLargeScreen ? 40 : 32).h,
+        
+        // Section déconnexion
+        _buildLogoutSection(context, isLargeScreen),
+        
+        (isLargeScreen ? 60 : 40).h,
+        
+        // Footer
+        _buildFooter(isLargeScreen),
+        
+        (isLargeScreen ? 60 : 40).h,
+      ],
     );
   }
 
@@ -167,13 +205,11 @@ class Compte extends StatelessWidget {
                         ? Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              EText(
                                 "${Utilisateur.currentUser.value!.nom} ${Utilisateur.currentUser.value!.prenom}",
-                                style: TextStyle(
-                                  fontSize: isLargeScreen ? 26 : 22,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.grey[800],
-                                ),
+                                size: isLargeScreen ? 26 : 22,
+                                weight: FontWeight.w700,
+                                color: Colors.grey[800],
                               ),
                               (isLargeScreen ? 12 : 8).h,
                               Row(
@@ -184,13 +220,11 @@ class Compte extends StatelessWidget {
                                     size: isLargeScreen ? 20 : 18,
                                   ),
                                   (isLargeScreen ? 10 : 8).w,
-                                  Text(
+                                  EText(
                                     "${Utilisateur.currentUser.value!.telephone.indicatif} ${Utilisateur.currentUser.value!.telephone.numero}",
-                                    style: TextStyle(
-                                      fontSize: isLargeScreen ? 18 : 16,
-                                      color: Colors.grey[600],
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                                    size: isLargeScreen ? 18 : 16,
+                                    color: Colors.grey[600],
+                                    weight: FontWeight.w500,
                                   ),
                                 ],
                               ),
@@ -199,21 +233,17 @@ class Compte extends StatelessWidget {
                         : Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              EText(
                                 "Me connecter / M'inscrire",
-                                style: TextStyle(
-                                  fontSize: isLargeScreen ? 24 : 20,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.color500,
-                                ),
+                                size: isLargeScreen ? 24 : 20,
+                                weight: FontWeight.w700,
+                                color: AppColors.color500,
                               ),
                               (isLargeScreen ? 12 : 8).h,
-                              Text(
+                              EText(
                                 "Accédez à votre compte",
-                                style: TextStyle(
-                                  fontSize: isLargeScreen ? 16 : 14,
-                                  color: Colors.grey[600],
-                                ),
+                                size: isLargeScreen ? 16 : 14,
+                                color: Colors.grey[600],
                               ),
                             ],
                           ),
@@ -264,97 +294,154 @@ class Compte extends StatelessWidget {
       ),
       child: Padding(
         padding: EdgeInsets.all(isLargeScreen ? 32 : 24),
-        child: Row(
-          children: [
-            // Contenu textuel
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Entreprises",
-                    style: TextStyle(
-                      fontSize: isLargeScreen ? 28 : 24,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.color500,
+        child: isLargeScreen 
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                EText(
+                  "Entreprises",
+                  size: isLargeScreen ? 28 : 24,
+                  weight: FontWeight.w700,
+                  color: AppColors.color500,
+                ),
+                (isLargeScreen ? 16 : 12).h,
+                EText(
+                  "Créez, modifiez et gérez vos entreprises",
+                  size: isLargeScreen ? 18 : 16,
+                  color: Colors.white.withOpacity(0.9),
+                ),
+                (isLargeScreen ? 28 : 20).h,
+                GestureDetector(
+                  onTap: () {
+                    Utilisateur.currentUser.value!.abonnement.isNul ||
+                            DateTime.parse(Utilisateur.currentUser.value!.abonnement!.limite).isBefore(DateTime.now())
+                        ? Get.to(AbonnementsListe())
+                        : Get.to(ViewUser(utilisateur: Utilisateur.currentUser.value!));
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isLargeScreen ? 24 : 20, 
+                      vertical: isLargeScreen ? 16 : 12
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.business_outlined,
+                          color: Colors.black,
+                          size: isLargeScreen ? 20 : 18,
+                        ),
+                        (isLargeScreen ? 10 : 8).w,
+                        EText(
+                          "Gérer mes entreprises",
+                          color: Colors.black,
+                          weight: FontWeight.w700,
+                          size: isLargeScreen ? 18 : 16,
+                        ),
+                      ],
                     ),
                   ),
-                  (isLargeScreen ? 16 : 12).h,
-                  Text(
-                    "Créez, modifiez et gérez vos entreprises",
-                    style: TextStyle(
-                      fontSize: isLargeScreen ? 18 : 16,
-                      color: Colors.white.withOpacity(0.9),
-                      height: 1.4,
+                ),
+                (isLargeScreen ? 24 : 20).h,
+                // Icône entreprise centrée
+                Center(
+                  child: Container(
+                    width: isLargeScreen ? 100 : 80,
+                    height: isLargeScreen ? 100 : 80,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(isLargeScreen ? 24 : 20),
+                    ),
+                    child: Icon(
+                      Icons.business,
+                      color: Colors.white,
+                      size: isLargeScreen ? 48 : 40,
                     ),
                   ),
-                  (isLargeScreen ? 28 : 20).h,
-                  GestureDetector(
-                    onTap: () {
-                      Utilisateur.currentUser.value!.abonnement.isNul ||
-                              DateTime.parse(Utilisateur.currentUser.value!.abonnement!.limite).isBefore(DateTime.now())
-                          ? Get.to(AbonnementsListe())
-                          : Get.to(ViewUser(utilisateur: Utilisateur.currentUser.value!));
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isLargeScreen ? 24 : 20, 
-                        vertical: isLargeScreen ? 16 : 12
+                ),
+              ],
+            )
+          : Row(
+              children: [
+                // Contenu textuel
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      EText(
+                        "Entreprises",
+                        size: isLargeScreen ? 28 : 24,
+                        weight: FontWeight.w700,
+                        color: AppColors.color500,
                       ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(25),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.white.withOpacity(0.3),
-                            blurRadius: 15,
-                            offset: Offset(0, 8),
-                          ),
-                        ],
+                      (isLargeScreen ? 16 : 12).h,
+                      EText(
+                        "Créez, modifiez et gérez vos entreprises",
+                        size: isLargeScreen ? 18 : 16,
+                        color: Colors.white.withOpacity(0.9),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.business_outlined,
-                            color: Colors.black,
-                            size: isLargeScreen ? 20 : 18,
+                      (isLargeScreen ? 28 : 20).h,
+                      GestureDetector(
+                        onTap: () {
+                          Utilisateur.currentUser.value!.abonnement.isNul ||
+                                  DateTime.parse(Utilisateur.currentUser.value!.abonnement!.limite).isBefore(DateTime.now())
+                              ? Get.to(AbonnementsListe())
+                              : Get.to(ViewUser(utilisateur: Utilisateur.currentUser.value!));
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isLargeScreen ? 24 : 20, 
+                            vertical: isLargeScreen ? 16 : 12
                           ),
-                          (isLargeScreen ? 10 : 8).w,
-                          Text(
-                            "Gérer mes entreprises",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                              fontSize: isLargeScreen ? 18 : 16,
-                            ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(25),
                           ),
-                        ],
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.business_outlined,
+                                color: Colors.black,
+                                size: isLargeScreen ? 20 : 18,
+                              ),
+                              (isLargeScreen ? 10 : 8).w,
+                              EText(
+                                "Gérer mes entreprises",
+                                color: Colors.black,
+                                weight: FontWeight.w700,
+                                size: isLargeScreen ? 18 : 16,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                
+                (isLargeScreen ? 28 : 20).w,
+                
+                // Icône entreprise
+                Container(
+                  width: isLargeScreen ? 100 : 80,
+                  height: isLargeScreen ? 100 : 80,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(isLargeScreen ? 24 : 20),
+                  ),
+                  child: Icon(
+                    Icons.business,
+                    color: Colors.white,
+                    size: isLargeScreen ? 48 : 40,
+                  ),
+                ),
+              ],
             ),
-            
-            (isLargeScreen ? 28 : 20).w,
-            
-            // Icône entreprise
-            Container(
-              width: isLargeScreen ? 100 : 80,
-              height: isLargeScreen ? 100 : 80,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(isLargeScreen ? 24 : 20),
-              ),
-              child: Icon(
-                Icons.business,
-                color: Colors.white,
-                size: isLargeScreen ? 48 : 40,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -363,13 +450,11 @@ class Compte extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        EText(
           "Plus",
-          style: TextStyle(
-            fontSize: isLargeScreen ? 28 : 24,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
+          size: isLargeScreen ? 28 : 24,
+          weight: FontWeight.w700,
+          color: Colors.white,
         ),
         (isLargeScreen ? 28 : 20).h,
         
@@ -448,21 +533,17 @@ class Compte extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      EText(
                         title,
-                        style: TextStyle(
-                          fontSize: isLargeScreen ? 20 : 18,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey[800],
-                        ),
+                        size: isLargeScreen ? 20 : 18,
+                        weight: FontWeight.w600,
+                        color: Colors.grey[800],
                       ),
                       (isLargeScreen ? 6 : 4).h,
-                      Text(
+                      EText(
                         subtitle,
-                        style: TextStyle(
-                          fontSize: isLargeScreen ? 16 : 14,
-                          color: Colors.grey[600],
-                        ),
+                        size: isLargeScreen ? 16 : 14,
+                        color: Colors.grey[600],
                       ),
                     ],
                   ),
@@ -486,50 +567,33 @@ class Compte extends StatelessWidget {
     return Obx(
       () => Utilisateur.currentUser.value == null
           ? SizedBox.shrink()
-          : Container(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Custom.showDialog(TwoOptionsDialog(
-                    confirmationText: "Me déconnecter",
-                    confirmFunction: () {
-                      FirebaseAuth.instance.signOut();
-                      Utilisateur.currentUser.value = null;
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => Connexion()),
-                        (route) => false,
-                      );
-                      Toasts.success(context, description: "Vous vous êtes déconnecté avec succès");
-                    },
-                    body: "Voulez-vous vraiment vous déconnecter ?",
-                    title: "Déconnexion",
-                  ));
+          : SimpleButton(
+            color: const Color.fromARGB(255, 255, 17, 0),
+            onTap: () {
+              Custom.showDialog(TwoOptionsDialog(
+                confirmationText: "Me déconnecter",
+                confirmFunction: () {
+                  FirebaseAuth.instance.signOut();
+                  Utilisateur.currentUser.value = null;
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => Connexion()),
+                    (route) => false,
+                  );
+                  Toasts.success(context, description: "Vous vous êtes déconnecté avec succès");
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red[500],
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(
-                    vertical: isLargeScreen ? 22 : 18
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(isLargeScreen ? 24 : 20),
-                  ),
-                  elevation: 3,
-                ),
-                icon: Icon(
-                  Icons.logout_rounded,
-                  size: isLargeScreen ? 26 : 22,
-                ),
-                label: Text(
-                  "Se déconnecter",
-                  style: TextStyle(
-                    fontSize: isLargeScreen ? 20 : 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+                body: "Voulez-vous vraiment vous déconnecter ?",
+                title: "Déconnexion",
+              ));
+            },
+            
+            child: EText(
+              "Se déconnecter",
+              size: isLargeScreen ? 20 : 18,
+              weight: FontWeight.w600,
+              color: Colors.white,
             ),
+          ),
     );
   }
 
@@ -553,13 +617,11 @@ class Compte extends StatelessWidget {
         (isLargeScreen ? 20 : 16).h,
         
         // Version
-        Text(
+        EText(
           "v1.0.0+4",
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.7),
-            fontSize: isLargeScreen ? 16 : 14,
-            fontWeight: FontWeight.w500,
-          ),
+          color: Colors.white.withOpacity(0.7),
+          size: isLargeScreen ? 16 : 14,
+          weight: FontWeight.w500,
         ),
       ],
     );

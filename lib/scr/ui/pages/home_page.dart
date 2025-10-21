@@ -204,14 +204,10 @@ class _HomePageState extends State<HomePage> {
               24.h,
               
               // Titre
-              Text(
+              EText(
                 "Abonnement expiré",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.grey[800],
-                ),
+                size: 25,
+              font: Fonts.poppinsBold,
               ),
               
               12.h,
@@ -230,32 +226,17 @@ class _HomePageState extends State<HomePage> {
               32.h,
               
               // Bouton d'action
-              Container(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Get.to(AbonnementsListe());
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.color500,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 3,
-                  ),
-                  icon: Icon(
-                    Icons.shopping_cart_outlined,
-                    size: 20,
-                  ),
-                  label: Text(
-                    "Acheter un abonnement",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+             SimpleButton(
+              width: 200,
+                onTap: () {
+                  Get.to(AbonnementsListe());
+                },
+               
+               
+                child: EText(
+                  "Acheter un abonnement",
+                  font: Fonts.poppinsBold,
+               color: Colors.white,
                 ),
               ),
             ],
@@ -571,6 +552,7 @@ class _HomePageState extends State<HomePage> {
 
   void createEntreprise() {
     String nom = "";
+    String description = "";
     final selectedItems = <String>[].obs;
     String id = "";
 
@@ -613,6 +595,7 @@ class _HomePageState extends State<HomePage> {
     var sieges = (<String>[]).obs;
 
     Get.dialog(SetEntreprise(
+      description: description,
       nom: nom,
       id: id,
       user: user,

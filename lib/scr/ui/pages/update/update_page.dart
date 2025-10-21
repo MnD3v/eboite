@@ -203,12 +203,7 @@ class UpdatePage extends StatelessWidget {
                           await Future.delayed(1.seconds);
                           var user = FirebaseAuth.instance.currentUser;
                           if (user.isNotNul) {
-                            if (user!.email != null) {
-                              await Utilisateur.getUser(user.email!);
-                            } else {
-                              await Utilisateur.getUser(
-                                  user.phoneNumber!.substring(4));
-                            }
+                              await Utilisateur.getUser(user!.email!);
                             await Utilisateur.refreshToken();
                             waitAfter(999, () {
                               Get.back();

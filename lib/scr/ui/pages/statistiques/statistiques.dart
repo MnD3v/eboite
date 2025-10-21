@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:immobilier_apk/scr/config/app/export.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:lottie/lottie.dart';
 import 'package:my_widgets/real_state/models/message.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -8,101 +7,83 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 class Statistiques extends StatelessWidget {
   Statistiques({super.key});
 
-  var allChartData = <List<FeedbackData>>[];
+  final List<List<FeedbackData>> allChartData = <List<FeedbackData>>[];
 
   final utilisateur = Utilisateur.currentUser.value!;
   
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-      ),
-      child: EScaffold(
-        color: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: Text(
-            'Statistiques & Analyses',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
-          ),
-          actions: [
-            Container(
-              margin: EdgeInsets.only(right: 16),
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                Icons.analytics_outlined,
-                color: Colors.white,
-                size: 20,
-              ),
-            ),
-          ],
+    var screenWidth = MediaQuery.of(context).size.width;
+    var isLargeScreen = screenWidth > 1200;
+    var isMediumScreen = screenWidth > 800 && screenWidth <= 1200;
+    
+    return EScaffold(
+      color: Colors.grey[50],
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 1,
+        shadowColor: Colors.black.withOpacity(0.1),
+        title: EText(
+          'Statistiques & Analyses',
+          font: Fonts.poppinsBold,
+          size: isLargeScreen ? 28 : 24,
+          color: Colors.grey[900],
         ),
-        body: utilisateur.entreprises.isEmpty 
-          ? _buildEmptyState()
-          : FutureBuilder(
-              future: getData(),
-              builder: (context, snapshot) {
-                if (DB.waiting(snapshot)) {
-                  return _buildLoadingState();
-                }
-                return _buildStatisticsContent();
-              },
-            ),
+        centerTitle: false,
+        toolbarHeight: isLargeScreen ? 80 : 65,
       ),
+      body: utilisateur.entreprises.isEmpty 
+        ? _buildEmptyState(isLargeScreen, isMediumScreen)
+        : FutureBuilder(
+            future: getData(),
+            builder: (context, snapshot) {
+              if (DB.waiting(snapshot)) {
+                return _buildLoadingState(isLargeScreen);
+              }
+              return _buildStatisticsContent(isLargeScreen, isMediumScreen);
+            },
+          ),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(bool isLargeScreen, bool isMediumScreen) {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(32),
+        padding: EdgeInsets.all(isLargeScreen ? 48 : 32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Animation Lottie
             Container(
-              height: Get.width * 0.6,
-              width: Get.width * 0.6,
+              height: isLargeScreen ? 400 : Get.width * 0.6,
+              width: isLargeScreen ? 400 : Get.width * 0.6,
+              constraints: BoxConstraints(maxHeight: 500, maxWidth: 500),
               child: Lottie.asset(
                 'assets/lotties/empty.json',
                 fit: BoxFit.contain,
               ),
             ),
             
-            32.h,
+            (isLargeScreen ? 48 : 32).h,
             
             // Titre
-            Text(
+            EText(
               "Aucune entreprise disponible",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
+              align: TextAlign.center,
+              size: isLargeScreen ? 32 : 24,
+              weight: FontWeight.w700,
+              color: Colors.grey[900],
             ),
             
-            16.h,
+            (isLargeScreen ? 24 : 16).h,
             
             // Description
-            Text(
+            EText(
               "Créez une entreprise pour commencer à analyser vos statistiques",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white.withOpacity(0.8),
-                height: 1.4,
-              ),
+              align: TextAlign.center,
+              size: isLargeScreen ? 20 : 16,
+              color: Colors.grey[600],
             ),
           ],
         ),
@@ -110,117 +91,208 @@ class Statistiques extends StatelessWidget {
     );
   }
 
-  Widget _buildLoadingState() {
+  Widget _buildLoadingState(bool isLargeScreen) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          LoadingAnimationWidget.threeRotatingDots(
-            color: AppColors.color500,
-            size: 50,
-          ),
-          24.h,
-          Text(
+          ECircularProgressIndicator(),
+          (isLargeScreen ? 32 : 24).h,
+          EText(
             "Chargement des statistiques...",
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.white.withOpacity(0.8),
-              fontWeight: FontWeight.w500,
-            ),
+            size: isLargeScreen ? 20 : 16,
+            color: Colors.grey[600],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStatisticsContent() {
+  Widget _buildStatisticsContent(bool isLargeScreen, bool isMediumScreen) {
     return SingleChildScrollView(
       physics: BouncingScrollPhysics(),
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(isLargeScreen ? 32 : 20),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: isLargeScreen ? 1400 : double.infinity,
+          ),
+          child: Column(
+            children: [
+              (isLargeScreen ? 32 : 24).h,
+              
+              // Header avec métriques globales
+              _buildGlobalMetrics(isLargeScreen, isMediumScreen),
+              
+              (isLargeScreen ? 40 : 32).h,
+              
+              // Graphiques par entreprise - Layout responsive
+           
+                _buildMobileCharts(),
+              
+              (isLargeScreen ? 60 : 40).h,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGlobalMetrics(bool isLargeScreen, bool isMediumScreen) {
+    final totalFeedbacks = allChartData.fold(0, (sum, chartData) => sum + somme(chartData.map((e) => e.value).toList()));
+    final totalEntreprises = utilisateur.entreprises.length;
+    
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(isLargeScreen ? 32 : 24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(isLargeScreen ? 24 : 20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 20,
+            offset: Offset(0, 8),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
       child: Column(
         children: [
-          24.h,
-          
-          // Titre principal
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.color500.withOpacity(0.9),
-                  AppColors.color500.withOpacity(0.7),
-                ],
+          Row(
+            children: [
+              Icon(
+                Icons.analytics_rounded,
+                color: AppColors.color500,
+                size: isLargeScreen ? 32 : 28,
               ),
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.color500.withOpacity(0.3),
-                  blurRadius: 20,
-                  offset: Offset(0, 10),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.analytics_rounded,
-                  color: Colors.white,
-                  size: 40,
-                ),
-                16.h,
-                Text(
-                  "Vue d'ensemble de vos entreprises",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-                8.h,
-                Text(
-                  "Analysez les retours de vos clients",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withOpacity(0.9),
-                  ),
-                ),
-              ],
-            ),
+              (isLargeScreen ? 16 : 12).w,
+              EText(
+                "Vue d'ensemble",
+                size: isLargeScreen ? 28 : 24,
+                weight: FontWeight.w700,
+                color: Colors.grey[900],
+              ),
+            ],
           ),
           
-          32.h,
+          (isLargeScreen ? 32 : 24).h,
           
-          // Graphiques par entreprise
-          ...allChartData.map((chartData) {
-            return _buildEnterpriseChart(chartData);
-          }).toList(),
-          
-          40.h,
+          // Métriques en grille responsive
+          Row(
+            children: [
+              Expanded(child: _buildMetricCard("Entreprises", totalEntreprises.toString(), Icons.business, isLargeScreen)),
+              (isLargeScreen ? 24 : 16).w,
+              Expanded(child: _buildMetricCard("Retours totaux", totalFeedbacks.toString(), Icons.feedback, isLargeScreen)),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildEnterpriseChart(List<FeedbackData> chartData) {
+  Widget _buildMetricCard(String title, String value, IconData icon, bool isLargeScreen) {
+    return Container(
+      padding: EdgeInsets.all(isLargeScreen ? 24 : 20),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(isLargeScreen ? 16 : 12),
+        border: Border.all(color: Colors.grey[200]!, width: 1),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            color: AppColors.color500,
+            size: isLargeScreen ? 32 : 28,
+          ),
+          (isLargeScreen ? 16 : 12).h,
+          EText(
+            value,
+            size: isLargeScreen ? 32 : 28,
+            weight: FontWeight.w700,
+            color: Colors.grey[900],
+          ),
+          (isLargeScreen ? 8 : 6).h,
+          EText(
+            title,
+            size: isLargeScreen ? 16 : 14,
+            color: Colors.grey[600],
+            align: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLargeScreenCharts(bool isLargeScreen) {
+    return Column(
+      children: [
+        // Première ligne - 2 graphiques côte à côte
+        if (allChartData.length >= 2)
+          Row(
+            children: [
+              Expanded(child: _buildEnterpriseChart(allChartData[0], isLargeScreen)),
+              32.w,
+              Expanded(child: _buildEnterpriseChart(allChartData[1], isLargeScreen)),
+            ],
+          ),
+        
+        // Graphiques restants
+        ...allChartData.skip(2).map((chartData) {
+          return Column(
+            children: [
+              32.h,
+              _buildEnterpriseChart(chartData, isLargeScreen),
+            ],
+          );
+        }).toList(),
+      ],
+    );
+  }
+
+  Widget _buildMediumScreenCharts() {
+    return Column(
+      children: allChartData.map((chartData) {
+        return Column(
+          children: [
+            _buildEnterpriseChart(chartData, false),
+            if (allChartData.indexOf(chartData) < allChartData.length - 1)
+              24.h,
+          ],
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildMobileCharts() {
+    return Column(
+      children: allChartData.map((chartData) {
+        return Column(
+          children: [
+            _buildEnterpriseChart(chartData, false),
+            if (allChartData.indexOf(chartData) < allChartData.length - 1)
+              24.h,
+          ],
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildEnterpriseChart(List<FeedbackData> chartData, bool isLargeScreen) {
     final entrepriseIndex = allChartData.indexOf(chartData);
     final entreprise = Utilisateur.currentUser.value!.entreprises[entrepriseIndex];
     final totalFeedbacks = somme(chartData.map((e) => e.value).toList());
     
     return Container(
-      margin: EdgeInsets.only(bottom: 32),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(isLargeScreen ? 20 : 16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: Offset(0, 10),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 15,
+            offset: Offset(0, 5),
             spreadRadius: 0,
           ),
         ],
@@ -229,72 +301,61 @@ class Statistiques extends StatelessWidget {
         children: [
           // Header de l'entreprise
           Container(
-            padding: EdgeInsets.all(24),
+            padding: EdgeInsets.all(isLargeScreen ? 24 : 20),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.grey[800]!,
-                  Colors.grey[900]!,
-                ],
-              ),
+              color: Colors.grey[900],
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(24),
-                topRight: Radius.circular(24),
+                topLeft: Radius.circular(isLargeScreen ? 20 : 16),
+                topRight: Radius.circular(isLargeScreen ? 20 : 16),
               ),
             ),
             child: Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(12),
+                  padding: EdgeInsets.all(isLargeScreen ? 12 : 10),
                   decoration: BoxDecoration(
                     color: AppColors.color500.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(isLargeScreen ? 12 : 10),
                   ),
                   child: Icon(
                     Icons.business,
                     color: AppColors.color500,
-                    size: 24,
+                    size: isLargeScreen ? 24 : 20,
                   ),
                 ),
                 
-                16.w,
+                (isLargeScreen ? 16 : 12).w,
                 
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      EText(
                         entreprise.nom,
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
+                        size: isLargeScreen ? 20 : 18,
+                        weight: FontWeight.w700,
+                        color: Colors.white,
                       ),
-                      8.h,
-                      Text(
+                      (isLargeScreen ? 6 : 4).h,
+                      EText(
                         "$totalFeedbacks retours au total",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white.withOpacity(0.8),
-                        ),
+                        size: isLargeScreen ? 14 : 12,
+                        color: Colors.white.withOpacity(0.8),
                       ),
                     ],
                   ),
                 ),
                 
                 Container(
-                  padding: EdgeInsets.all(8),
+                  padding: EdgeInsets.all(isLargeScreen ? 8 : 6),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(isLargeScreen ? 8 : 6),
                   ),
                   child: Icon(
                     Icons.pie_chart,
                     color: Colors.white,
-                    size: 20,
+                    size: isLargeScreen ? 18 : 16,
                   ),
                 ),
               ],
@@ -303,24 +364,24 @@ class Statistiques extends StatelessWidget {
           
           // Graphique
           Container(
-            padding: EdgeInsets.all(24),
+            padding: EdgeInsets.all(isLargeScreen ? 24 : 20),
             child: totalFeedbacks == 0
-                ? _buildNoDataState()
-                : _buildChart(chartData),
+                ? _buildNoDataState(isLargeScreen)
+                : _buildChart(chartData, isLargeScreen),
           ),
           
           // Légende des statistiques
           if (totalFeedbacks > 0) ...[
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              padding: EdgeInsets.symmetric(horizontal: isLargeScreen ? 24 : 20, vertical: isLargeScreen ? 16 : 12),
               decoration: BoxDecoration(
                 color: Colors.grey[50],
                 borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
+                  bottomLeft: Radius.circular(isLargeScreen ? 20 : 16),
+                  bottomRight: Radius.circular(isLargeScreen ? 20 : 16),
                 ),
               ),
-              child: _buildStatisticsLegend(chartData),
+              child: _buildStatisticsLegend(chartData, isLargeScreen),
             ),
           ],
         ],
@@ -328,47 +389,43 @@ class Statistiques extends StatelessWidget {
     );
   }
 
-  Widget _buildNoDataState() {
+  Widget _buildNoDataState(bool isLargeScreen) {
     return Container(
-      height: 200,
+      height: isLargeScreen ? 250 : 200,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.bar_chart_outlined,
-            size: 64,
+            size: isLargeScreen ? 80 : 64,
             color: Colors.grey[400],
           ),
-          16.h,
-          Text(
+          (isLargeScreen ? 20 : 16).h,
+          EText(
             "Aucun feedback pour le moment",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[600],
-            ),
+            size: isLargeScreen ? 20 : 18,
+            weight: FontWeight.w600,
+            color: Colors.grey[600],
           ),
-          8.h,
-          Text(
+          (isLargeScreen ? 12 : 8).h,
+          EText(
             "Les statistiques apparaîtront ici",
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[500],
-            ),
+            size: isLargeScreen ? 16 : 14,
+            color: Colors.grey[500],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildChart(List<FeedbackData> chartData) {
+  Widget _buildChart(List<FeedbackData> chartData, bool isLargeScreen) {
     return Container(
-      height: 350,
+      height: isLargeScreen ? 400 : 350,
       child: SfCircularChart(
         title: ChartTitle(
           text: 'Répartition des feedbacks',
           textStyle: TextStyle(
-            fontSize: 18,
+            fontSize: isLargeScreen ? 20 : 18,
             fontWeight: FontWeight.w600,
             color: Colors.grey[800],
           ),
@@ -378,7 +435,7 @@ class Statistiques extends StatelessWidget {
           overflowMode: LegendItemOverflowMode.wrap,
           position: LegendPosition.bottom,
           textStyle: TextStyle(
-            fontSize: 14,
+            fontSize: isLargeScreen ? 16 : 14,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -391,7 +448,7 @@ class Statistiques extends StatelessWidget {
               isVisible: true,
               labelPosition: ChartDataLabelPosition.outside,
               textStyle: TextStyle(
-                fontSize: 12,
+                fontSize: isLargeScreen ? 14 : 12,
                 fontWeight: FontWeight.w600,
               ),
               connectorLineSettings: ConnectorLineSettings(
@@ -414,16 +471,19 @@ class Statistiques extends StatelessWidget {
     );
   }
 
-  Widget _buildStatisticsLegend(List<FeedbackData> chartData) {
+  Widget _buildStatisticsLegend(List<FeedbackData> chartData, bool isLargeScreen) {
     return Wrap(
-      spacing: 16,
-      runSpacing: 12,
+      spacing: isLargeScreen ? 20 : 16,
+      runSpacing: isLargeScreen ? 16 : 12,
       children: chartData.map((data) {
         return Container(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: EdgeInsets.symmetric(
+            horizontal: isLargeScreen ? 16 : 12, 
+            vertical: isLargeScreen ? 12 : 8
+          ),
           decoration: BoxDecoration(
             color: _getCategoryColor(data.category).withOpacity(0.1),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(isLargeScreen ? 24 : 20),
             border: Border.all(
               color: _getCategoryColor(data.category).withOpacity(0.3),
               width: 1,
@@ -433,21 +493,19 @@ class Statistiques extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 12,
-                height: 12,
+                width: isLargeScreen ? 14 : 12,
+                height: isLargeScreen ? 14 : 12,
                 decoration: BoxDecoration(
                   color: _getCategoryColor(data.category),
                   shape: BoxShape.circle,
                 ),
               ),
-              8.w,
-              Text(
+              (isLargeScreen ? 10 : 8).w,
+              EText(
                 "${data.category}: ${data.value}",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: _getCategoryColor(data.category),
-                ),
+                size: isLargeScreen ? 16 : 14,
+                weight: FontWeight.w600,
+                color: _getCategoryColor(data.category),
               ),
             ],
           ),

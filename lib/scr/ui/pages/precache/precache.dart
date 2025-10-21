@@ -5,14 +5,12 @@ import 'package:immobilier_apk/scr/config/app/export.dart';
 import 'package:immobilier_apk/scr/ui/pages/home_page.dart';
 import 'package:immobilier_apk/scr/ui/pages/signIn/connexion.dart';
 import 'package:immobilier_apk/scr/ui/pages/update/update_page.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:lottie/lottie.dart';
 
 bool soir = false;
 
 class LoadingPage extends StatelessWidget {
   LoadingPage({super.key});
-
   var loadEnd = false.obs;
   var showLogo = false.obs;
   @override
@@ -35,9 +33,9 @@ class LoadingPage extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(
-                          height: 120,
+                          height: 45,
                           child: Image(
-                              image: AssetImage('assets/icons/logo.png'),
+                              image: AssetImage('assets/icons/logo-text.png'),
                               fit: BoxFit.contain)),
                     ],
                   ),
@@ -51,10 +49,10 @@ class LoadingPage extends StatelessWidget {
                 duration: 333.milliseconds,
                 child: loadEnd.value || !showLogo.value
                     ? 0.h
-                    : LoadingAnimationWidget.waveDots(
+                    : ECircularProgressIndicator(
                         color: AppColors.color500,
-                        size: 50,
-                        
+                        key: Key('cir'),
+                        label: null,
                       ),
               ),
             ))
@@ -139,7 +137,7 @@ class LoadingPage extends StatelessWidget {
     } on Exception {
       // TODO
     }
-    if (update.version != version) {
+    if (update.version != version && !kIsWeb) {
       Get.off(UpdatePage());
 
       return;
@@ -148,14 +146,21 @@ class LoadingPage extends StatelessWidget {
     var sharp = await SharedPreferences.getInstance();
     var firstOpen = sharp.getBool('firstOpen');
     await Future.delayed(1.seconds);
+    if ((sharp.getInt('forceDeconnexion') ??0) != 1) {
+      sharp.setInt('forceDeconnexion', 1);
+      try {
+     await FirebaseAuth.instance.signOut();
+        
+      } catch (e) {
+        print(e);
+      }
+      Get.off(()=> Connexion());
+    }
     var user = FirebaseAuth.instance.currentUser;
     if (user.isNotNul) {
-      if (user!.email != null) {
-        await Utilisateur.getUser(user.email!);
-      } else {
-        await Utilisateur.getUser(user.phoneNumber!.substring(4));
-      }
-      if(!kIsWeb){
+      await Utilisateur.getUser(user!.email!);
+
+      if (!kIsWeb) {
         await Utilisateur.refreshToken();
       }
       waitAfter(999, () {

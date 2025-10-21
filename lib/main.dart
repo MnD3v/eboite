@@ -14,9 +14,9 @@ import 'package:immobilier_apk/scr/ui/pages/precache/precache.dart';
 import 'package:immobilier_apk/scr/ui/pages/update/update_page.dart';
 import 'package:my_widgets/real_state/models/message.dart' as message;
 
-String version = "1.0.0+9";
+String version = "1.0.0+10";
 
-Update update = Update(version: "1.0.0+8", optionel: false);
+Update update = Update(version: "1.0.0+10", optionel: false);
 
 double phoneScallerFactor = 1;
 
@@ -180,11 +180,9 @@ void main() async {
 
   var user = FirebaseAuth.instance.currentUser;
   if (user.isNotNul) {
-    if (user!.email != null) {
-      await Utilisateur.getUser(user.email!);
-    } else {
-      await Utilisateur.getUser(user.phoneNumber!.substring(4));
-    }
+   
+      await Utilisateur.getUser(user!.email!);
+    
     // verifyPaiements();
   }
 
@@ -198,7 +196,7 @@ void main() async {
     debugShowCheckedModeBanner: false,
     theme: AppTheme.theme,
     home: LoadingPage(),
-    defaultTransition: Transition.leftToRight,
+    defaultTransition: Transition.fadeIn,
     transitionDuration: 444.milliseconds,
   ));
 

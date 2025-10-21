@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:immobilier_apk/scr/config/app/export.dart';
 import 'package:immobilier_apk/scr/ui/pages/abonnnements/abonnements_liste.dart';
 import 'package:immobilier_apk/scr/ui/pages/compte/widgets/set_entreprise.dart';
-import 'package:immobilier_apk/scr/ui/pages/home_page.dart';
 import 'package:lottie/lottie.dart';
+import 'package:my_widgets/my_widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -252,7 +252,7 @@ class ViewUser extends StatelessWidget {
     );
   }
 
-  Widget _buildEntrepriseCard(dynamic element) {
+  Widget _buildEntrepriseCard(RealEntreprise element) {
     WidgetsToImageController controller = WidgetsToImageController();
     
     return Container(
@@ -329,7 +329,88 @@ class ViewUser extends StatelessWidget {
                     ],
                   ),
                 ),
-                
+                     Container(
+                  decoration: BoxDecoration(
+                    color: Colors.green.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () {
+                        Get.dialog(
+                          Dialog(
+                            insetPadding: EdgeInsets.all(16),
+                            child: Container(
+                              padding: EdgeInsets.all(24),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // Titre
+                                  EText(
+                                    "Inviter un utilisateur",
+                                    size: 20,
+                                    weight: FontWeight.w700,
+                                    color: Colors.grey[900],
+                                  ),
+                                  
+                                  24.h,
+                                  
+                                  // Champ email
+                                  ETextField(
+                                    placeholder: "Adresse email",
+                                    onChanged: (value) {
+                                      // TODO: Gérer la saisie de l'email
+                                    },
+                                    phoneScallerFactor: phoneScallerFactor,
+                                  ),
+                                  
+                                  24.h,
+                                  
+                                  // Boutons
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: SimpleOutlineButton(
+                                          onTap: () {
+                                            Get.back();
+                                          },
+                                          text: "Annuler",
+                                        ),
+                                      ),
+                                      
+                                      16.w,
+                                      
+                                      Expanded(
+                                        child: SimpleButton(
+                                          onTap: () {
+                                            // TODO: Implémenter la validation
+                                            Get.back();
+                                          },
+                                          text: "Valider",
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.all(12),
+                        child: Icon(
+                          Icons.person_add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+             
                 // Bouton d'édition
                 Container(
                   decoration: BoxDecoration(
@@ -345,6 +426,7 @@ class ViewUser extends StatelessWidget {
                           index: utilisateur.entreprises.indexOf(element),
                           id: element.id,
                           nom: element.nom,
+                          description: element.description,
                           selectedItems: RxList(element.categories),
                           sieges: RxList(element.sieges),
                           user: utilisateur,
@@ -497,6 +579,7 @@ class ViewUser extends StatelessWidget {
 
   void _showCreateEntrepriseDialog() {
     String nom = "";
+    String description = "";
     final selectedItems = <String>[].obs;
     String id = "";
 
@@ -597,6 +680,7 @@ class ViewUser extends StatelessWidget {
     }
     
     Get.dialog(SetEntreprise(
+      description: description,
       nom: nom,
       id: id,
       user: utilisateur,

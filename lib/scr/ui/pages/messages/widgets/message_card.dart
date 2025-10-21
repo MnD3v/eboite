@@ -1,4 +1,6 @@
 import 'package:immobilier_apk/scr/config/app/export.dart';
+import 'package:immobilier_apk/scr/config/app/message_colors.dart';
+import 'package:immobilier_apk/scr/config/app/text_utils.dart';
 import 'package:immobilier_apk/scr/ui/pages/messages/details.dart';
 import 'package:my_widgets/real_state/models/message.dart';
 
@@ -14,170 +16,138 @@ class MessageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final categoryColor = categorieColors[element.categorie.toLowerCase()] ?? Colors.blue;
+    final categoryColor = MessageColors.getCategoryColor(element.categorie);
     final categoryIcon = _getCategoryIcon(element.categorie.toLowerCase());
     
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: GestureDetector(
-        onTap: () {
-          Get.dialog(MessageDetails(
-            message: element,
-            entrepriseID: entrepriseID, // À adapter selon vos besoins
-          ));
-        },
-        child: Container(
-         height: 300,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: categoryColor.withOpacity(0.1),
-                blurRadius: 15,
-                offset: Offset(0, 8),
-                spreadRadius: 0,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: Material(
+        elevation: 0,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: () {
+            Get.dialog(MessageDetails(
+              message: element,
+              entrepriseID: entrepriseID,
+            ));
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.grey[200]!,
+                width: 1,
               ),
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: Offset(0, 4),
-                spreadRadius: 0,
-              ),
-            ],
-            border: Border.all(
-              color: categoryColor.withOpacity(0.2),
-              width: 1,
             ),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header avec gradient et catégorie
+                // Header minimaliste avec catégorie
                 Container(
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        categoryColor.withOpacity(0.9),
-                        categoryColor.withOpacity(0.7),
-                      ],
+                    color: categoryColor.withOpacity(0.08),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
                     ),
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                   child: Row(
                     children: [
-                      // Icône de catégorie
+                      // Badge de catégorie minimaliste
                       Container(
-                        padding: EdgeInsets.all(10),
+                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
+                          color: categoryColor,
+                          borderRadius: BorderRadius.circular(6),
                         ),
-                        child: Icon(
-                          categoryIcon,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                      
-                      16.w,
-                      
-                      // Titre de catégorie et siège
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                              element.categorie.toUpperCase(),
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.8,
-                              ),
+                            Icon(
+                              categoryIcon,
+                              color: Colors.white,
+                              size: 14,
                             ),
-                            if (element.siege != null) ...[
-                              4.h,
-                              Text(
-                                element.siege!,
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
+                            4.w,
+                            EText(
+                              element.categorie.toUpperCase(),
+                             color: Colors.white,
+                             size: 17,
+                            ),
                           ],
                         ),
                       ),
                       
-                      // Indicateur de statut
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors.white,
-                          size: 16,
-                        ),
+                      Spacer(),
+                      
+                      // Date discrète
+                      EText(
+                        _formatDate(element.date),
+                        color: Colors.grey,
                       ),
                     ],
                   ),
                 ),
                 
-                // Contenu du message
-                Container(
-                  padding: EdgeInsets.all(20),
+                // Contenu principal
+                Padding(
+                  padding: EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Message principal
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[50],
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.grey[200]!,
-                            width: 1,
-                          ),
-                        ),
-                        child: Text(
-                          element.message.replaceAll("\n", " "),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: Colors.grey[800],
-                            fontSize: 15,
-                            fontWeight: FontWeight.w400,
-                            height: 1.4,
-                          ),
-                        ),
+                      // Message principal avec typographie améliorée
+                      TextUtils.buildFormattedText(
+                        element.message.replaceAll("\n", " "),
+                        color: Colors.grey[900],
+                        baseWeight: FontWeight.w400,
+                        maxLines: 3,
                       ),
                       
-                      16.h,
+                      12.h,
                       
-                      // Informations de contact et date
+                      // Footer avec informations secondaires
                       Row(
                         children: [
-                          // Contact
+                          // Siège si disponible
+                          if (element.siege != null) ...[
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.location_on_outlined,
+                                    color: Colors.grey[600],
+                                    size: 14,
+                                  ),
+                                  4.w,
+                                  EText(
+                                    element.siege!,
+                                    color: Colors.grey[700],
+                                    size: 15,
+                                    weight: FontWeight.w500,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            
+                            8.w,
+                          ],
+                          
+                          // Contact si disponible
                           if (!element.contact.isNul) ...[
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: Colors.blue[50],
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: Colors.blue[200]!,
-                                  width: 1,
-                                ),
+                                borderRadius: BorderRadius.circular(4),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -185,52 +155,26 @@ class MessageCard extends StatelessWidget {
                                   Icon(
                                     Icons.phone_outlined,
                                     color: Colors.blue[600],
-                                    size: 16,
+                                    size: 14,
                                   ),
-                                  6.w,
-                                  Text(
-                                    element.contact??"",
-                                    style: TextStyle(
-                                      color: Colors.blue[700],
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                                  4.w,
+                                  EText(
+                                    element.contact!,
+                                    color: Colors.blue[700],
+                                    weight: FontWeight.w500,
                                   ),
                                 ],
                               ),
                             ),
-                            
-                            12.w,
                           ],
                           
-                          // Date
-                          Expanded(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[100],
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.calendar_today_outlined,
-                                    color: Colors.grey[600],
-                                    size: 16,
-                                  ),
-                                  6.w,
-                                  Text(
-                                    _formatDate(element.date),
-                                    style: TextStyle(
-                                      color: Colors.grey[700],
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                          Spacer(),
+                          
+                          // Indicateur de navigation subtil
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.grey[400],
+                            size: 14,
                           ),
                         ],
                       ),
@@ -273,9 +217,4 @@ class MessageCard extends StatelessWidget {
   }
 }
 
-Map<String, Color> categorieColors = {
-  "suggestion": Colors.green,
-  "plainte": const Color.fromARGB(255, 255, 17, 0),
-  "idée": Color.fromARGB(255, 0, 79, 206),
-  "appréciation": const Color.fromARGB(255, 0, 150, 55)
-};
+// Les couleurs sont maintenant définies dans MessageColors

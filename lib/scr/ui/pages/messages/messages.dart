@@ -71,10 +71,7 @@ class _MessagesState extends State<Messages> {
             backgroundColor: Colors.transparent,
             body: snapshot.connectionState == ConnectionState.waiting
                 ? Center(
-                    child: LoadingAnimationWidget.threeRotatingDots(
-                      color: AppColors.color500,
-                      size: 40,
-                    ),
+                    child: ECircularProgressIndicator(),
                   )
                 : Obx(
                     () => messages.isEmpty
@@ -107,15 +104,12 @@ class _MessagesState extends State<Messages> {
                                   Container(
                                     padding:
                                         EdgeInsets.symmetric(horizontal: 24),
-                                    child: Text(
+                                    child: EText(
                                       "Aucun message pour l'instant",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.grey[800],
-                                        height: 1.2,
-                                      ),
+                                      align: TextAlign.center,
+                                      size: 24,
+                                      weight: FontWeight.w700,
+                                      color: Colors.grey[800],
                                     ),
                                   ),
 
@@ -125,15 +119,12 @@ class _MessagesState extends State<Messages> {
                                   Container(
                                     padding:
                                         EdgeInsets.symmetric(horizontal: 32),
-                                    child: Text(
+                                    child: EText(
                                       "Les messages de vos clients apparaîtront ici. Soyez patient, ils arrivent bientôt !",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.grey[600],
-                                        height: 1.4,
-                                      ),
+                                      align: TextAlign.center,
+                                      size: 16,
+                                      weight: FontWeight.w400,
+                                      color: Colors.grey[600],
                                     ),
                                   ),
                                   40.h,

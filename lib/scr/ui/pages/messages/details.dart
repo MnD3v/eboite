@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:immobilier_apk/scr/config/app/export.dart';
+import 'package:immobilier_apk/scr/config/app/message_colors.dart';
+import 'package:immobilier_apk/scr/config/app/text_utils.dart';
 import 'package:my_widgets/real_state/models/message.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -19,330 +21,295 @@ class MessageDetails extends StatelessWidget {
       child: Container(
         constraints: BoxConstraints(
           maxHeight: Get.height * 0.85,
-          maxWidth: Get.width * 0.95,
+          maxWidth: 800,
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 20,
-                  offset: Offset(0, 10),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Header élégant avec gradient et icône de catégorie
-                _buildHeader(),
-                
-                // Contenu principal
-                Flexible(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Message principal
-                        _buildMessageSection(),
-                        
-                        24.h,
-                        
-                        // Informations de contact
-                        if (!message.contact.isNul) _buildContactSection(),
-                        
-                        24.h,
-                        
-                        // Date et actions
-                        _buildFooterSection(context),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Colors.grey[200]!,
+            width: 1,
           ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header minimaliste
+            _buildHeader(),
+
+            // Contenu principal
+            Flexible(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Date de réception
+                    _buildDateSection(),
+
+                    20.h,
+
+                    // Message principal
+                    _buildMessageSection(),
+
+                    20.h,
+
+                    // Informations de contact
+                    if (!message.contact.isNul) _buildContactSection(),
+
+                    20.h,
+
+                    // Actions
+                    _buildActionsSection(context),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildHeader() {
-    final categoryColor = categorieColors[message.categorie.toLowerCase()] ?? Colors.blue;
+    final categoryColor = MessageColors.getCategoryColor(message.categorie);
     final categoryIcon = _getCategoryIcon(message.categorie.toLowerCase());
-    
+
     return Container(
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            categoryColor.withOpacity(0.9),
-            categoryColor.withOpacity(0.7),
-          ],
-        ),
+        color: categoryColor.withOpacity(0.08),
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
         ),
       ),
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(20),
-          child: Row(
-            children: [
-              // Icône de catégorie
-              Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(
+      child: Row(
+        children: [
+          // Badge de catégorie
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: categoryColor,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
                   categoryIcon,
                   color: Colors.white,
-                  size: 28,
+                  size: 16,
                 ),
-              ),
-              
-              16.w,
-              
-              // Titre de catégorie
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      message.categorie.toUpperCase(),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      "Détails du message",
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
+                6.w,
+                EText(
+                  message.categorie.toUpperCase(),
+                  color: Colors.white,
+                  weight: FontWeight.w600,
+                  letterSpacing: 0.5,
                 ),
-              ),
-              
-              // Bouton de fermeture
-              GestureDetector(
-                onTap: () => Get.back(),
-                child: Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    Icons.close,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+
+          Spacer(),
+
+          // Bouton de fermeture minimaliste
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => Get.back(),
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                padding: EdgeInsets.all(8),
+                child: Icon(
+                  Icons.close,
+                  color: Colors.grey[600],
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildMessageSection() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.grey[200]!,
-          width: 1,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Titre de section
+        EText(
+          "Message",
+       font: Fonts.poppinsBold,
+       size: 24,
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                CupertinoIcons.bubble_left,
-                color: Colors.grey[600],
-                size: 20,
-              ),
-              8.w,
-              Text(
-                "Message",
-                style: TextStyle(
-                  color: Colors.grey[700],
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          12.h,
-          Text(
-            message.message,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-              height: 1.5,
-            ),
-          ),
-        ],
-      ),
+        12.h,
+        Container(height: 1, width: 70, color: Colors.grey,),
+        12.h,
+
+
+        // Contenu du message
+        SelectableText(
+          message.message,
+          style: TextStyle( fontSize: 19 ),
+          textScaleFactor: .7,
+        ),
+      ],
     );
   }
 
   Widget _buildContactSection() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.blue[50],
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.blue[200]!,
-          width: 1,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Titre de section
+        EText(
+          "Contact",
+          color: Colors.grey[900],
+          size: 18,
+          weight: FontWeight.w600,
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.phone_outlined,
-                color: Colors.blue[600],
-                size: 20,
-              ),
-              8.w,
-              Text(
-                "Contact",
-                style: TextStyle(
-                  color: Colors.blue[700],
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          12.h,
-          GestureDetector(
+
+        12.h,
+
+        // Bouton d'appel
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
             onTap: () {
               launchUrl(Uri.parse("tel:${message.contact}"));
             },
+            borderRadius: BorderRadius.circular(12),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              width: double.infinity,
+              padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.blue[100],
+                color: Colors.blue[50],
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.blue[300]!,
+                  color: Colors.blue[200]!,
                   width: 1,
                 ),
               ),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.call,
-                    color: Colors.blue[700],
-                    size: 18,
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.blue[100],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.phone_outlined,
+                      color: Colors.blue[700],
+                      size: 20,
+                    ),
                   ),
-                  8.w,
-                  EText(
-                    message.contact,
-                 
+                  12.w,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        EText(
+                          "Appeler",
+                          color: Colors.blue[700],
+                          weight: FontWeight.w600,
+                        ),
+                        EText(
+                          message.contact!,
+                          color: Colors.blue[600],
+                          size: 13,
+                          weight: FontWeight.w400,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.blue[400],
+                    size: 16,
                   ),
                 ],
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget _buildFooterSection(context) {
+  Widget _buildDateSection() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Date
+        // Titre de section
+
+        12.h,
+
+        // Informations de date
         Container(
           width: double.infinity,
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.grey[100],
+            color: Colors.grey[50],
             borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.grey[200]!,
+              width: 1,
+            ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                Icons.calendar_today_outlined,
-                color: Colors.grey[600],
+              EText(
+                "Date de réception",
                 size: 18,
               ),
-              8.w,
-              Text(
-                message.date.split(" ")[0].split("-").reversed.join("-"),
-                style: TextStyle(
-                  color: Colors.grey[700],
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today_outlined,
+                    color: Colors.grey[600],
+                    size: 18,
+                  ),
+                  12.w,
+                  EText(
+                    _formatDate(message.date),
+                    color: Colors.grey[900],
+                    weight: FontWeight.w500,
+                  ),
+                ],
               ),
             ],
           ),
         ),
-        
-        20.h,
-        
-        // Bouton de suppression
-        // if (!entrepriseID.isNul)
-          Container(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () => _showDeleteDialog(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 2,
-              ),
-              icon: Icon(
-                CupertinoIcons.trash,
-                size: 20,
-              ),
-              label: Text(
-                "Supprimer ce message",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
       ],
+    );
+  }
+
+  Widget _buildActionsSection(context) {
+    return InkWell(
+      onTap: () => _showDeleteDialog(context),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: 50,
+        height: 50,
+        decoration: BoxDecoration(
+          color: Colors.red[50],
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Colors.red[200]!,
+            width: 1,
+          ),
+        ),
+        child: Icon(
+          Icons.delete_outline,
+          color: Colors.red[700],
+          size: 20,
+        ),
+      ),
     );
   }
 
@@ -361,6 +328,18 @@ class MessageDetails extends StatelessWidget {
     }
   }
 
+  String _formatDate(String date) {
+    try {
+      final parts = date.split(" ")[0].split("-");
+      if (parts.length >= 3) {
+        return "${parts[2]}/${parts[1]}/${parts[0]}";
+      }
+      return date;
+    } catch (e) {
+      return date;
+    }
+  }
+
   void _showDeleteDialog(context) {
     Get.dialog(
       TwoOptionsDialog(
@@ -374,14 +353,13 @@ class MessageDetails extends StatelessWidget {
                 .collection(Collections.messages)
                 .doc(message.id)
                 .delete();
-                print(entrepriseID);
+            print(entrepriseID);
             Get.back();
             Get.back();
             Toasts.success(context, description: "Avis supprimé avec succès");
           } catch (e) {
             Get.back();
-            Fluttertoast.showToast(
-                msg: "Une erreur s'est produite");
+            Fluttertoast.showToast(msg: "Une erreur s'est produite");
           }
         },
         body: "Voulez-vous vraiment supprimer cet avis ?",
@@ -392,9 +370,4 @@ class MessageDetails extends StatelessWidget {
   }
 }
 
-Map<String, Color> categorieColors = {
-  "suggestion": Colors.green,
-  "plainte": const Color.fromARGB(255, 255, 17, 0),
-  "idée": Color.fromARGB(255, 0, 79, 206),
-  "appréciation": const Color.fromARGB(255, 0, 150, 55)
-};
+// Les couleurs sont maintenant définies dans MessageColors
