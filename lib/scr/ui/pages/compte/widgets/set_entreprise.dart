@@ -10,24 +10,36 @@ class SetEntreprise extends StatelessWidget {
       required this.selectedItems,
       required this.sieges,
       required this.description,
-      required this.user});
+      required this.user,
+      this.notificationsSettings});
 
-  RxList<String> sieges;
+  RxList<Siege> sieges;
   int? index;
   String nom;
   String description;
   final user;
   RxList<String> selectedItems;
   String id;
+  NotificationSettings? notificationsSettings;
+  
+  // Variables pour les notifications
+  final RxBool notificationsEnabled = false.obs;
+  final RxList<String> notificationEmails = <String>[].obs;
   @override
   Widget build(BuildContext context) {
+    // Initialiser les valeurs si on est en mode modification
+    if (index != null && notificationsSettings != null) {
+      notificationsEnabled.value = notificationsSettings!.enabled;
+      notificationEmails.value = List.from(notificationsSettings!.emails);
+    }
+    
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: EdgeInsets.all(16),
       child: Container(
-        constraints: BoxConstraints(maxWidth: 600, maxHeight: MediaQuery.of(context).size.height * 0.9),
+        constraints: BoxConstraints(maxWidth: 700, maxHeight: MediaQuery.of(context).size.height * 0.9),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -40,15 +52,11 @@ class SetEntreprise extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Header avec gradient
+            // Header avec couleur FF2600
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [AppColors.color500, AppColors.color400],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: Color(0xFFFF2600),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
@@ -60,12 +68,12 @@ class SetEntreprise extends StatelessWidget {
                   Container(
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppColors.white.withOpacity(0.2),
+                      color: Colors.white.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
                       Icons.business,
-                      color: AppColors.white,
+                      color: Colors.white,
                       size: 24,
                     ),
                   ),
@@ -78,13 +86,13 @@ class SetEntreprise extends StatelessWidget {
                           index != null ? "Modifier l'entreprise" : "Nouvelle entreprise",
                           size: 24,
                           weight: FontWeight.bold,
-                          color: AppColors.white,
+                          color: Colors.white,
                         ),
                         4.h,
                         EText(
                           "Configurez les informations de votre entreprise",
                           size: 14,
-                          color: AppColors.white.withOpacity(0.9),
+                          color: Colors.white.withOpacity(0.9),
                         ),
                       ],
                     ),
@@ -94,12 +102,12 @@ class SetEntreprise extends StatelessWidget {
                     child: Container(
                       padding: EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: AppColors.white.withOpacity(0.2),
+                        color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Icon(
                         Icons.close,
-                        color: AppColors.white,
+                        color: Colors.white,
                         size: 20,
                       ),
                     ),
@@ -160,9 +168,9 @@ class SetEntreprise extends StatelessWidget {
                     Obx(() => Container(
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.background,
+                        color: Colors.grey[50],
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.color200),
+                        border: Border.all(color: Colors.grey[300]!),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,24 +179,56 @@ class SetEntreprise extends StatelessWidget {
                             "Cellules configurées (${sieges.length})",
                             size: 14,
                             weight: FontWeight.w600,
-                            color: AppColors.textColor,
+                            color: Colors.black,
+                          ),
+                          8.h,
+                          // Message explicatif
+                          Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFFF2600).withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: Color(0xFFFF2600).withOpacity(0.2),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  color: Color(0xFFFF2600),
+                                  size: 16,
+                                ),
+                                8.w,
+                                Expanded(
+                                  child: EText(
+                                    "Lorsque votre entreprise a plusieurs départements ou déploie plusieurs programmes, vous pouvez tout départager ici.",
+                                    size: 15,
+                                    color: Colors.black.withOpacity(0.8),
+                                    weight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                           12.h,
                           if (sieges.isEmpty)
                             Container(
                               padding: EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: AppColors.white,
+                                color: Colors.white,
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: AppColors.color200),
+                                border: Border.all(color: Colors.grey[300]!),
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.info_outline, color: AppColors.color400, size: 20),
+                                  Icon(Icons.info_outline, color: Color(0xFFFF2600), size: 20),
                                   8.w,
                                   EText(
                                     "Aucune cellule configurée",
-                                    color: AppColors.textColor.withOpacity(0.7),
+                                    color: Colors.black.withOpacity(0.7),
                                   ),
                                 ],
                               ),
@@ -197,10 +237,10 @@ class SetEntreprise extends StatelessWidget {
                             Wrap(
                               spacing: 8,
                               runSpacing: 8,
-                              children: sieges.map((element) => _buildSiegeChip(element)).toList(),
+                              children: sieges.map((element) => _buildCelluleChip(element)).toList(),
                             ),
                           12.h,
-                          _buildAddSiegeButton(),
+                          _buildAddCelluleButton(),
                         ],
                       ),
                     )),
@@ -213,21 +253,94 @@ class SetEntreprise extends StatelessWidget {
                     Obx(() => Container(
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.background,
+                        color: Colors.grey[50],
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.color200),
+                        border: Border.all(color: Colors.grey[300]!),
                       ),
                       child: Column(
                         children: [
                           EText(
                             "Sélectionnez les types d'avis que vous souhaitez recevoir",
                             size: 14,
-                            color: AppColors.textColor.withOpacity(0.8),
+                            color: Colors.black.withOpacity(0.8),
                           ),
                           16.h,
                           ...["Suggestion", "Idée", "Plainte", "Appréciation"].map((element) => 
                             _buildCategoryCheckbox(element)
                           ).toList(),
+                        ],
+                      ),
+                    )),
+                    24.h,
+                    
+                    // Section Notifications
+                    _buildSectionHeader("Notifications par email", Icons.email_outlined),
+                    16.h,
+                    
+                    Obx(() => Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey[300]!),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Case à cocher pour activer les notifications
+                          CheckboxListTile(
+                            title: EText(
+                              "Activer les notifications par email",
+                              size: 16,
+                              weight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
+                            value: notificationsEnabled.value,
+                            onChanged: (bool? value) {
+                              notificationsEnabled.value = value ?? false;
+                            },
+                            activeColor: Color(0xFFFF2600),
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          
+                          // Liste des emails si activé
+                          if (notificationsEnabled.value) ...[
+                            16.h,
+                            EText(
+                              "Emails de notification",
+                              size: 14,
+                              weight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
+                            12.h,
+                            if (notificationEmails.isEmpty)
+                              Container(
+                                padding: EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: Colors.grey[300]!),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.info_outline, color: Color(0xFFFF2600), size: 20),
+                                    8.w,
+                                    EText(
+                                      "Aucun email configuré",
+                                      color: Colors.black.withOpacity(0.7),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            else
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: notificationEmails.map((email) => _buildEmailChip(email)).toList(),
+                              ),
+                            12.h,
+                            _buildAddEmailButton(),
+                          ],
                         ],
                       ),
                     )),
@@ -241,7 +354,7 @@ class SetEntreprise extends StatelessWidget {
                             onTap: () => Get.back(),
                             child: EText(
                               "Annuler",
-                              color: AppColors.textColor,
+                              color: Colors.black,
                               weight: FontWeight.w600,
                             ),
                           ),
@@ -254,7 +367,7 @@ class SetEntreprise extends StatelessWidget {
                             onTap: _handleSave,
                             child: EText(
                               index != null ? "Modifier" : "Créer l'entreprise",
-                              color: AppColors.white,
+                              color: Colors.white,
                               weight: FontWeight.w600,
                             ),
                           ),
@@ -277,17 +390,17 @@ class SetEntreprise extends StatelessWidget {
         Container(
           padding: EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppColors.color100,
+            color: Color(0xFFFF2600).withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, color: AppColors.color500, size: 20),
+          child: Icon(icon, color: Color(0xFFFF2600), size: 20),
         ),
         12.w,
         EText(
           title,
           size: 18,
           weight: FontWeight.w600,
-          color: AppColors.textColor,
+          color: Colors.black,
         ),
       ],
     );
@@ -309,14 +422,14 @@ class SetEntreprise extends StatelessWidget {
           label,
           size: 14,
           weight: FontWeight.w600,
-          color: AppColors.textColor,
+          color: Colors.black,
         ),
         8.h,
         Container(
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.color200),
+            border: Border.all(color: Colors.grey[300]!),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.05),
@@ -338,127 +451,97 @@ class SetEntreprise extends StatelessWidget {
           EText(
             helperText,
             size: 12,
-            color: AppColors.textColor.withOpacity(0.6),
+            color: Colors.grey[600],
           ),
         ],
       ],
     );
   }
 
-  Widget _buildSiegeChip(String siege) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.color300),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.color100,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: EText(
-              siege,
-              color: AppColors.color500,
-              weight: FontWeight.w500,
+  Widget _buildCelluleChip(Siege cellule) {
+    return GestureDetector(
+      onTap: () {
+        _showEditCelluleDialog(cellule);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.color300),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.color100,
+              blurRadius: 4,
+              offset: Offset(0, 2),
             ),
-          ),
-          GestureDetector(
-            onTap: () {
-              Get.dialog(TwoOptionsDialog(
-                confirmFunction: () {
-                  sieges.remove(siege);
-                  Get.back();
-                },
-                body: "Voulez-vous vraiment supprimer cette cellule ?",
-                confirmationText: "Supprimer",
-                title: "Suppression",
-              ));
-            },
-            child: Container(
-              padding: EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: AppColors.color100,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                Icons.close,
-                color: AppColors.color500,
-                size: 16,
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  EText(
+                    cellule.nom,
+                    color: Color(0xFFFF2600),
+                    weight: FontWeight.w500,
+                  ),
+                  if (cellule.emails.isNotEmpty) ...[
+                    8.w,
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Color(0xFFFF2600).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: EText(
+                        "${cellule.emails.length} email${cellule.emails.length > 1 ? 's' : ''}",
+                        color: Color(0xFFFF2600),
+                        size: 12,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
-          ),
-        ],
+            GestureDetector(
+              onTap: () {
+                Get.dialog(TwoOptionsDialog(
+                  confirmFunction: () {
+                    sieges.remove(cellule);
+                    Get.back();
+                  },
+                  body: "Voulez-vous vraiment supprimer cette cellule ?",
+                  confirmationText: "Supprimer",
+                  title: "Suppression",
+                ));
+              },
+              child: Container(
+                padding: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: AppColors.color100,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.close,
+                  color: Color(0xFFFF2600),
+                  size: 16,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildAddSiegeButton() {
+  Widget _buildAddCelluleButton() {
     return GestureDetector(
       onTap: () {
-        var siege = "";
-        Custom.showDialog(Dialog(
-          backgroundColor: Colors.transparent,
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            padding: EdgeInsets.all(24),
-            child: EColumn(children: [
-              Row(
-                children: [
-                  Icon(Icons.add_location_alt_outlined, color: AppColors.color500),
-                  12.w,
-                  EText(
-                    "Ajouter une cellule",
-                    size: 18,
-                    weight: FontWeight.w600,
-                    color: AppColors.textColor,
-                  ),
-                ],
-              ),
-              16.h,
-              ETextField(
-                placeholder: "Nom de la cellule",
-                onChanged: (value) => siege = value,
-                phoneScallerFactor: phoneScallerFactor,
-              ),
-              20.h,
-              Row(
-                children: [
-                  Expanded(
-                    child: SimpleOutlineButton(
-                      onTap: () => Get.back(),
-                      child: EText("Annuler", color: AppColors.textColor),
-                    ),
-                  ),
-                  12.w,
-                  Expanded(
-                    child: SimpleButton(
-                      onTap: () {
-                        if (siege.isEmpty) {
-                          Toasts.error(Get.context!, description: "Veuillez saisir le nom de la cellule");
-                          return;
-                        }
-                        sieges.add(siege);
-                        Get.back();
-                      },
-                      child: EText("Ajouter", color: AppColors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ]),
-          ),
-        ));
+        _showAddCelluleDialog();
       },
       child: Container(
         width: double.infinity,
@@ -471,11 +554,11 @@ class SetEntreprise extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.add, color: AppColors.color500, size: 20),
+            Icon(Icons.add, color: Color(0xFFFF2600), size: 20),
             8.w,
             EText(
               "Ajouter une cellule",
-              color: AppColors.color500,
+              color: Color(0xFFFF2600),
               weight: FontWeight.w600,
             ),
           ],
@@ -488,22 +571,22 @@ class SetEntreprise extends StatelessWidget {
     final isSelected = selectedItems.contains(category);
     final categoryData = {
       "Suggestion": {
-        "color": Color(0xFF007AFF), // Apple Blue
+        "color": Color(0xFFFF2600), // Rouge principal
         "icon": Icons.lightbulb_outline,
         "description": "Proposer des améliorations"
       },
       "Idée": {
-        "color": Color(0xFF5856D6), // Apple Purple
+        "color": Color(0xFFFF2600), // Rouge principal
         "icon": Icons.psychology_outlined,
         "description": "Partager une nouvelle idée"
       },
       "Plainte": {
-        "color": Color(0xFFFF3B30), // Apple Red
+        "color": Color(0xFFFF2600), // Rouge principal
         "icon": Icons.report_problem_outlined,
         "description": "Signaler un problème"
       },
       "Appréciation": {
-        "color": Color(0xFF34C759), // Apple Green
+        "color": Color(0xFFFF2600), // Rouge principal
         "icon": Icons.favorite_outline,
         "description": "Exprimer sa satisfaction"
       },
@@ -525,7 +608,7 @@ class SetEntreprise extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? color : Color(0xFFE5E5EA),
@@ -569,13 +652,13 @@ class SetEntreprise extends StatelessWidget {
                       category,
                       size: 17,
                       weight: FontWeight.w600,
-                      color: AppColors.textColor,
+                      color: Colors.black,
                     ),
                     4.h,
                     EText(
                       description,
                       size: 14,
-                      color: AppColors.textColor.withOpacity(0.6),
+                      color: Colors.black.withOpacity(0.6),
                     ),
                   ],
                 ),
@@ -596,7 +679,7 @@ class SetEntreprise extends StatelessWidget {
                 child: isSelected
                     ? Icon(
                         Icons.check,
-                        color: AppColors.white,
+                        color: Colors.white,
                         size: 16,
                       )
                     : null,
@@ -605,6 +688,530 @@ class SetEntreprise extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildEmailChip(String email) {
+    return Container(
+      constraints: BoxConstraints(maxWidth: 600, ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.color300),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.color100,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: EText(
+              email,
+              color: Color(0xFFFF2600),
+              weight: FontWeight.w500,
+              size: 14,
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              Get.dialog(TwoOptionsDialog(
+                confirmFunction: () {
+                  notificationEmails.remove(email);
+                  Get.back();
+                },
+                body: "Voulez-vous vraiment supprimer cet email ?",
+                confirmationText: "Supprimer",
+                title: "Suppression",
+              ));
+            },
+            child: Container(
+              padding: EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: AppColors.color100,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.close,
+                color: Color(0xFFFF2600),
+                size: 16,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddEmailButton() {
+    return GestureDetector(
+      onTap: () {
+        var email = "";
+        Custom.showDialog(Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 600,),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            padding: EdgeInsets.all(24),
+            child: EColumn(children: [
+              Row(
+                children: [
+                  Icon(Icons.email_outlined, color: Color(0xFFFF2600)),
+                  12.w,
+                  EText(
+                    "Ajouter un email",
+                    size: 18,
+                    weight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ],
+              ),
+              16.h,
+              ETextField(
+                placeholder: "exemple@email.com",
+                onChanged: (value) => email = value,
+                phoneScallerFactor: phoneScallerFactor,
+              ),
+              20.h,
+              Row(
+                children: [
+                  Expanded(
+                    child: SimpleOutlineButton(
+                      onTap: () => Get.back(),
+                      child: EText("Annuler", color: Colors.black),
+                    ),
+                  ),
+                  12.w,
+                  Expanded(
+                    child: SimpleButton(
+                      onTap: () {
+                        if (email.isEmpty) {
+                          Toasts.error(Get.context!, description: "Veuillez saisir une adresse email");
+                          return;
+                        }
+                        if (!GFunctions.isEmail(email)) {
+                          Toasts.error(Get.context!, description: "Veuillez saisir une adresse email valide");
+                          return;
+                        }
+                        if (notificationEmails.contains(email)) {
+                          Toasts.error(Get.context!, description: "Cette adresse email est déjà ajoutée");
+                          return;
+                        }
+                        notificationEmails.add(email);
+                        Get.back();
+                      },
+                      child: EText("Ajouter", color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ]),
+          ),
+        ));
+      },
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColors.color100,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.color300, style: BorderStyle.solid),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.add, color: Color(0xFFFF2600), size: 20),
+            8.w,
+            EText(
+              "Ajouter un email",
+              color: Color(0xFFFF2600),
+              weight: FontWeight.w600,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAddCelluleDialog() {
+    String celluleNom = "";
+    RxList<String> celluleEmails = <String>[].obs;
+    
+    Get.dialog(
+      Dialog(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 700),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: EColumn(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+              EText(
+                "Ajouter une cellule",
+                size: 20,
+                weight: FontWeight.w600,
+              ),
+              24.h,
+              
+              // Nom de la cellule
+              EText("Nom de la cellule"),
+              8.h,
+              ETextField(
+                placeholder: "Nom de la cellule",
+                onChanged: (value) => celluleNom = value,
+                phoneScallerFactor: phoneScallerFactor,
+              ),
+              
+              24.h,
+              
+              // Section emails
+              EText(
+                "Emails de notification (optionnel)",
+                size: 16,
+                weight: FontWeight.w600,
+              ),
+              8.h,
+              EText(
+                "Vous pouvez configurer les emails maintenant ou plus tard",
+                size: 12,
+                color: Colors.grey[600],
+              ),
+              12.h,
+              
+              // Liste des emails
+              Obx(
+                () => Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: celluleEmails
+                      .map(
+                        (email) => GestureDetector(
+                          onTap: () {
+                            Get.dialog(TwoOptionsDialog(
+                              confirmFunction: () {
+                                celluleEmails.remove(email);
+                                Get.back();
+                              },
+                              body: "Voulez-vous vraiment supprimer cet email ?",
+                              confirmationText: "Supprimer",
+                              title: "Suppression"
+                            ));
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.background,
+                              borderRadius: BorderRadius.circular(9),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                EText(
+                                  email,
+                                  color: Color(0xFFFF2600),
+                                  size: 14,
+                                ),
+                                4.w,
+                                Icon(
+                                  Icons.close,
+                                  size: 16,
+                                  color: Color(0xFFFF2600),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+              
+              12.h,
+              
+              // Bouton d'ajout d'email
+              FloatingActionButton(
+                mini: true,
+                onPressed: () {
+                  var email = "";
+                  Custom.showDialog(Dialog(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 700),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: EColumn(children: [
+                          EText("Adresse email"),
+                        ETextField(
+                          placeholder: "exemple@email.com",
+                          onChanged: (value) {
+                            email = value;
+                          },
+                          phoneScallerFactor: phoneScallerFactor,
+                        ),
+                        12.h,
+                        SimpleButton(
+                          onTap: () {
+                            if (email.isEmpty) {
+                              Toasts.error(Get.context!,
+                                  description: "Veuillez saisir une adresse email");
+                              return;
+                            }
+                            if (!GFunctions.isEmail(email)) {
+                              Toasts.error(Get.context!,
+                                  description: "Veuillez saisir une adresse email valide");
+                              return;
+                            }
+                            if (celluleEmails.contains(email)) {
+                              Toasts.error(Get.context!,
+                                  description: "Cette adresse email est déjà ajoutée");
+                              return;
+                            }
+                            celluleEmails.add(email);
+                            Get.back();
+                          },
+                          text: "Ajouter",
+                        )
+                      ]),
+                    ),
+                  ),
+                  ));
+                },
+                child: Icon(Icons.add, color: Colors.white, size: 20),
+              ),
+              
+              24.h,
+              
+              // Boutons d'action
+              Row(
+                children: [
+                  Expanded(
+                    child: SimpleOutlineButton(
+                      onTap: () {
+                        Get.back();
+                      },
+                      text: "Annuler",
+                    ),
+                  ),
+                  12.w,
+                  Expanded(
+                    child: SimpleButton(
+                      onTap: () {
+                        if (celluleNom.isEmpty) {
+                          Toasts.error(Get.context!,
+                              description: "Veuillez saisir le nom de la cellule");
+                          return;
+                        }
+                        
+                        // Créer la nouvelle cellule
+                        sieges.add(Siege(
+                          nom: celluleNom,
+                          emails: celluleEmails.toList(),
+                        ));
+                        Get.back();
+                      },
+                      text: "Créer la cellule",
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+    );
+  }
+
+  void _showEditCelluleDialog(Siege cellule) {
+    String celluleNom = cellule.nom;
+    RxList<String> celluleEmails = cellule.emails.obs;
+    
+    Get.dialog(
+      Dialog(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 700),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: EColumn(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+              EText(
+                "Modifier la cellule",
+                size: 20,
+                weight: FontWeight.w600,
+              ),
+              24.h,
+              
+              // Nom de la cellule
+              EText("Nom de la cellule"),
+              8.h,
+              ETextField(
+                placeholder: "Nom de la cellule",
+                initialValue: celluleNom,
+                onChanged: (value) => celluleNom = value,
+                phoneScallerFactor: phoneScallerFactor,
+              ),
+              
+              24.h,
+              
+              // Section emails
+              EText(
+                "Emails de notification",
+                size: 16,
+                weight: FontWeight.w600,
+              ),
+              12.h,
+              
+              // Liste des emails
+              Obx(
+                () => Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: celluleEmails
+                      .map(
+                        (email) => GestureDetector(
+                          onTap: () {
+                            Get.dialog(TwoOptionsDialog(
+                              confirmFunction: () {
+                                celluleEmails.remove(email);
+                                Get.back();
+                              },
+                              body: "Voulez-vous vraiment supprimer cet email ?",
+                              confirmationText: "Supprimer",
+                              title: "Suppression"
+                            ));
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.background,
+                              borderRadius: BorderRadius.circular(9),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                EText(
+                                  email,
+                                  color: Color(0xFFFF2600),
+                                  size: 14,
+                                ),
+                                4.w,
+                                Icon(
+                                  Icons.close,
+                                  size: 16,
+                                  color: Color(0xFFFF2600),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+              
+              12.h,
+              
+              // Bouton d'ajout d'email
+              FloatingActionButton(
+                mini: true,
+                onPressed: () {
+                  var email = "";
+                  Custom.showDialog(Dialog(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 700),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: EColumn(children: [
+                          EText("Adresse email"),
+                        ETextField(
+                          placeholder: "exemple@email.com",
+                          onChanged: (value) {
+                            email = value;
+                          },
+                          phoneScallerFactor: phoneScallerFactor,
+                        ),
+                        12.h,
+                        SimpleButton(
+                          onTap: () {
+                            if (email.isEmpty) {
+                              Toasts.error(Get.context!,
+                                  description: "Veuillez saisir une adresse email");
+                              return;
+                            }
+                            if (!GFunctions.isEmail(email)) {
+                              Toasts.error(Get.context!,
+                                  description: "Veuillez saisir une adresse email valide");
+                              return;
+                            }
+                            if (celluleEmails.contains(email)) {
+                              Toasts.error(Get.context!,
+                                  description: "Cette adresse email est déjà ajoutée");
+                              return;
+                            }
+                            celluleEmails.add(email);
+                            Get.back();
+                          },
+                          text: "Ajouter",
+                        )
+                      ]),
+                    ),
+                  ),
+                  ));
+                },
+                child: Icon(Icons.add, color: Color(0xFFFF2600), size: 20),
+              ),
+              
+              24.h,
+              
+              // Boutons d'action
+              Row(
+                children: [
+                  Expanded(
+                    child: SimpleOutlineButton(
+                      onTap: () {
+                        Get.back();
+                      },
+                      text: "Annuler",
+                    ),
+                  ),
+                  12.w,
+                  Expanded(
+                    child: SimpleButton(
+                      onTap: () {
+                        if (celluleNom.isEmpty) {
+                          Toasts.error(Get.context!,
+                              description: "Veuillez saisir le nom de la cellule");
+                          return;
+                        }
+                        
+                        // Mettre à jour la cellule
+                        int index = sieges.indexOf(cellule);
+                        if (index != -1) {
+                          sieges[index] = Siege(
+                            nom: celluleNom,
+                            emails: celluleEmails.toList(),
+                          );
+                        }
+                        Get.back();
+                      },
+                      text: "Sauvegarder",
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
     );
   }
 
@@ -622,6 +1229,12 @@ class SetEntreprise extends StatelessWidget {
       return;
     }
     
+    // Validation des notifications si activées
+    if (notificationsEnabled.value && notificationEmails.isEmpty) {
+      Toasts.error(Get.context!, description: "Veuillez ajouter au moins un email de notification");
+      return;
+    }
+    
     loading();
 
     var doc = DB.firestore(Collections.entreprises).doc(id);
@@ -631,13 +1244,23 @@ class SetEntreprise extends StatelessWidget {
       return;
     }
     
+    // Créer les paramètres de notification
+    NotificationSettings? notificationSettings;
+    if (notificationsEnabled.value) {
+      notificationSettings = NotificationSettings(
+        enabled: true,
+        emails: List.from(notificationEmails),
+      );
+    }
+    
     await doc.set(RealEntreprise(
       description: description,
-      sieges: sieges,
+      sieges: sieges.toList(),
       auteur: user.telephone.numero,
       nom: nom,
       id: id.toLowerCase(),
       categories: selectedItems,
+      notificationsSettings: notificationSettings,
     ).toMap());
     
     if (index == null) {
@@ -647,7 +1270,8 @@ class SetEntreprise extends StatelessWidget {
         id: id,
         auteur: user.telephone.numero,
         categories: selectedItems,
-        sieges: sieges,
+        sieges: sieges.toList(),
+        notificationsSettings: notificationSettings,
       ));
     } else {
       user.entreprises[index] = RealEntreprise(
@@ -656,7 +1280,8 @@ class SetEntreprise extends StatelessWidget {
         id: id,
         auteur: user.telephone.numero,
         categories: selectedItems,
-        sieges: sieges,
+        sieges: sieges.toList(),
+        notificationsSettings: notificationSettings,
       );
     }
 
@@ -668,8 +1293,8 @@ class SetEntreprise extends StatelessWidget {
         title: "Succès",
         message: index != null ? "L'entreprise a été modifiée avec succès" : "L'entreprise a été créée avec succès",
         duration: 2.seconds,
-        backgroundColor: AppColors.color500,
-        icon: Icon(Icons.check_circle, color: AppColors.white),
+        backgroundColor: Color(0xFFFF2600),
+        icon: Icon(Icons.check_circle, color: Colors.white),
       ),
     );
   }

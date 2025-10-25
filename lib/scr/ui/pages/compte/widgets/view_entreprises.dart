@@ -14,34 +14,36 @@ import 'package:widgets_to_image/widgets_to_image.dart';
 class ViewUser extends StatelessWidget {
   ViewUser({super.key, required this.utilisateur});
 
-  var sieges = (<String>[]).obs;
+  var sieges = (<Siege>[]).obs;
   final Utilisateur utilisateur;
   
   @override
   Widget build(BuildContext context) {
+    var screenWidth = MediaQuery.of(context).size.width;
+    var isLargeScreen = screenWidth > 1200;
+    var isMediumScreen = screenWidth > 800 && screenWidth <= 1200;
+    
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
       ),
       child: EScaffold(
         color: Colors.white,
-        appBar: _buildAppBar(),
+        appBar: _buildAppBar(isLargeScreen, isMediumScreen),
         body: utilisateur.entreprises.isEmpty
-            ? _buildEmptyState()
-            : _buildEntreprisesList(),
+            ? _buildEmptyState(isLargeScreen, isMediumScreen)
+            : _buildEntreprisesList(isLargeScreen, isMediumScreen),
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(bool isLargeScreen, bool isMediumScreen) {
     return AppBar(
-      title: Text(
+      title: EText(
         "Mes entreprises",
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
-        ),
+        size: isLargeScreen ? 28 : isMediumScreen ? 26 : 24,
+        weight: FontWeight.w700,
+        color: Colors.white,
       ),
       surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.transparent,
@@ -49,14 +51,17 @@ class ViewUser extends StatelessWidget {
       elevation: 0,
       actions: [
         Container(
-          margin: EdgeInsets.only(right: 20),
+          margin: EdgeInsets.only(right: isLargeScreen ? 32 : isMediumScreen ? 24 : 20),
           child: Material(
             color: Colors.transparent,
             child: InkWell(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(25),
               onTap: () => _showCreateEntrepriseDialog(),
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: EdgeInsets.symmetric(
+                  horizontal: isLargeScreen ? 24 : isMediumScreen ? 20 : 20, 
+                  vertical: isLargeScreen ? 16 : isMediumScreen ? 14 : 12
+                ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
@@ -81,17 +86,15 @@ class ViewUser extends StatelessWidget {
                     Icon(
                       Icons.add_business_outlined,
                       color: Colors.white,
-                      size: 20,
-                    ),
-                    8.w,
-                    Text(
-                      "Créer une entreprise",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
-                      ),
-                    ),
+                      size: isLargeScreen ? 24 : isMediumScreen ? 22 : 20,
+                  ),
+                    (isLargeScreen ? 12 : isMediumScreen ? 10 : 8).w,
+                  EText(
+                    "Créer une entreprise",
+                    color: Colors.white,
+                    weight: FontWeight.w700,
+                    size: isLargeScreen ? 18 : isMediumScreen ? 17 : 16,
+                  ),
                   ],
                 ),
               ),
@@ -102,60 +105,60 @@ class ViewUser extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(bool isLargeScreen, bool isMediumScreen) {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(32),
+        padding: EdgeInsets.all(isLargeScreen ? 48 : isMediumScreen ? 40 : 32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Animation Lottie
             Container(
-              height: Get.width * 0.6,
-              width: Get.width * 0.6,
+              height: Get.width * (isLargeScreen ? 0.4 : isMediumScreen ? 0.5 : 0.6),
+              width: Get.width * (isLargeScreen ? 0.4 : isMediumScreen ? 0.5 : 0.6),
               child: Lottie.asset(
                 'assets/lotties/empty.json',
                 fit: BoxFit.contain,
               ),
             ),
             
-            32.h,
+            (isLargeScreen ? 48 : isMediumScreen ? 40 : 32).h,
             
             // Titre
-            Text(
+            EText(
               "Aucune entreprise disponible",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
+              align: TextAlign.center,
+              size: isLargeScreen ? 32 : isMediumScreen ? 28 : 24,
+              weight: FontWeight.w700,
+              color: Colors.white,
             ),
             
-            16.h,
+            (isLargeScreen ? 24 : isMediumScreen ? 20 : 16).h,
             
             // Description
-            Text(
+            EText(
               "Créez votre première entreprise pour commencer à recevoir des retours de vos clients",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white.withOpacity(0.8),
-                height: 1.4,
-              ),
+              align: TextAlign.center,
+              size: isLargeScreen ? 20 : isMediumScreen ? 18 : 16,
+              color: Colors.white.withOpacity(0.8),
             ),
             
-            40.h,
+            (isLargeScreen ? 60 : isMediumScreen ? 50 : 40).h,
             
             // Bouton d'action
             Container(
               width: double.infinity,
+              constraints: BoxConstraints(
+                maxWidth: isLargeScreen ? 400 : isMediumScreen ? 350 : double.infinity,
+              ),
               child: ElevatedButton.icon(
                 onPressed: () => _showCreateEntrepriseDialog(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.color500,
                   foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: EdgeInsets.symmetric(
+                    vertical: isLargeScreen ? 20 : isMediumScreen ? 18 : 16
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -163,14 +166,12 @@ class ViewUser extends StatelessWidget {
                 ),
                 icon: Icon(
                   Icons.add_business_outlined,
-                  size: 20,
+                  size: isLargeScreen ? 24 : isMediumScreen ? 22 : 20,
                 ),
-                label: Text(
+                label: EText(
                   "Créer une entreprise",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  size: isLargeScreen ? 18 : isMediumScreen ? 17 : 16,
+                  weight: FontWeight.w600,
                 ),
               ),
             ),
@@ -180,91 +181,134 @@ class ViewUser extends StatelessWidget {
     );
   }
 
-  Widget _buildEntreprisesList() {
+  Widget _buildEntreprisesList(bool isLargeScreen, bool isMediumScreen) {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(20),
-      child: Column(
-        children: [
-          24.h,
-          
-          // Titre de section
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.color500.withOpacity(0.9),
-                  AppColors.color500.withOpacity(0.7),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.color500.withOpacity(0.3),
-                  blurRadius: 20,
-                  offset: Offset(0, 10),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.business_rounded,
-                  color: Colors.white,
-                  size: 40,
-                ),
-                16.h,
-                Text(
-                  "Gérez vos entreprises",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-                8.h,
-                Text(
-                  "Téléchargez vos affiches et modifiez vos informations",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withOpacity(0.9),
-                  ),
-                ),
-              ],
-            ),
+      padding: EdgeInsets.all(isLargeScreen ? 32 : isMediumScreen ? 24 : 20),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: isLargeScreen ? 1200 : isMediumScreen ? 900 : double.infinity,
           ),
-          
-          32.h,
-          
-          // Liste des entreprises
-          ...utilisateur.entreprises.map((element) {
-            return _buildEntrepriseCard(element);
-          }).toList(),
-          
-          40.h,
-        ],
+          child: Column(
+            children: [
+              (isLargeScreen ? 32 : isMediumScreen ? 28 : 24).h,
+              
+              // Titre de section
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(isLargeScreen ? 32 : isMediumScreen ? 24 : 20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.color500.withOpacity(0.9),
+                      AppColors.color500.withOpacity(0.7),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(isLargeScreen ? 32 : isMediumScreen ? 28 : 24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.color500.withOpacity(0.3),
+                      blurRadius: 20,
+                      offset: Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.business_rounded,
+                      color: Colors.white,
+                      size: isLargeScreen ? 56 : isMediumScreen ? 48 : 40,
+                    ),
+                    (isLargeScreen ? 24 : isMediumScreen ? 20 : 16).h,
+                    EText(
+                      "Gérez vos entreprises",
+                      align: TextAlign.center,
+                      size: isLargeScreen ? 28 : isMediumScreen ? 24 : 20,
+                      weight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                    (isLargeScreen ? 12 : isMediumScreen ? 10 : 8).h,
+                    EText(
+                      "Téléchargez vos affiches et modifiez vos informations",
+                      align: TextAlign.center,
+                      size: isLargeScreen ? 20 : isMediumScreen ? 18 : 16,
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                  ],
+                ),
+              ),
+              
+              (isLargeScreen ? 48 : isMediumScreen ? 40 : 32).h,
+              
+              // Liste des entreprises - Layout responsive
+              isLargeScreen 
+                ? _buildLargeScreenGrid()
+                : isMediumScreen 
+                  ? _buildMediumScreenGrid()
+                  : _buildMobileList(),
+              
+              (isLargeScreen ? 60 : isMediumScreen ? 50 : 40).h,
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildEntrepriseCard(RealEntreprise element) {
+  Widget _buildLargeScreenGrid() {
+    return Wrap(
+      spacing: 24,
+      runSpacing: 24,
+      children: utilisateur.entreprises.map((element) {
+        return SizedBox(
+          width: (1200 - 64 - 24) / 2, // 2 colonnes avec espacement et padding
+          child: _buildEntrepriseCard(element, true, false),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildMediumScreenGrid() {
+    return Wrap(
+      spacing: 20,
+      runSpacing: 20,
+      children: utilisateur.entreprises.map((element) {
+        return SizedBox(
+          width: (900 - 48 - 20) / 2, // 2 colonnes avec espacement et padding
+          child: _buildEntrepriseCard(element, false, true),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildMobileList() {
+    return Wrap(
+      spacing: 16,
+      runSpacing: 16,
+      children: utilisateur.entreprises.map((element) {
+        return SizedBox(
+          width: (Get.width - 40 - 16) / 2, // 2 colonnes avec espacement
+          child: _buildEntrepriseCard(element, false, false),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildEntrepriseCard(RealEntreprise element, [bool isLargeScreen = false, bool isMediumScreen = false]) {
     WidgetsToImageController controller = WidgetsToImageController();
     
     return Container(
-      margin: EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(isLargeScreen ? 32 : isMediumScreen ? 28 : 24),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: Offset(0, 10),
+            blurRadius: isLargeScreen ? 24 : isMediumScreen ? 22 : 20,
+            offset: Offset(0, isLargeScreen ? 12 : isMediumScreen ? 11 : 10),
             spreadRadius: 0,
           ),
         ],
@@ -273,7 +317,7 @@ class ViewUser extends StatelessWidget {
         children: [
           // Header de l'entreprise
           Container(
-            padding: EdgeInsets.all(24),
+            padding: EdgeInsets.all(isLargeScreen ? 32 : isMediumScreen ? 28 : 24),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -284,47 +328,43 @@ class ViewUser extends StatelessWidget {
                 ],
               ),
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(24),
-                topRight: Radius.circular(24),
+                topLeft: Radius.circular(isLargeScreen ? 32 : isMediumScreen ? 28 : 24),
+                topRight: Radius.circular(isLargeScreen ? 32 : isMediumScreen ? 28 : 24),
               ),
             ),
             child: Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(12),
+                  padding: EdgeInsets.all(isLargeScreen ? 16 : isMediumScreen ? 14 : 12),
                   decoration: BoxDecoration(
                     color: AppColors.color500.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(isLargeScreen ? 20 : isMediumScreen ? 18 : 16),
                   ),
                   child: Icon(
                     Icons.business,
                     color: AppColors.color500,
-                    size: 24,
+                    size: isLargeScreen ? 32 : isMediumScreen ? 28 : 24,
                   ),
                 ),
                 
-                16.w,
+                (isLargeScreen ? 20 : isMediumScreen ? 18 : 16).w,
                 
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      EText(
                         element.nom,
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
+                        size: isLargeScreen ? 28 : isMediumScreen ? 26 : 22,
+                        weight: FontWeight.w700,
+                        color: Colors.white,
                       ),
-                      8.h,
-                      Text(
+                      (isLargeScreen ? 12 : isMediumScreen ? 10 : 8).h,
+                      EText(
                         "ID: ${element.id.toUpperCase()}",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white.withOpacity(0.8),
-                          fontFamily: 'monospace',
-                        ),
+                        size: isLargeScreen ? 18 : isMediumScreen ? 16 : 14,
+                        color: Colors.white.withOpacity(0.8),
+                        font: 'monospace',
                       ),
                     ],
                   ),
@@ -449,23 +489,23 @@ class ViewUser extends StatelessWidget {
           
           // Affiche avec QR Code
           Container(
-            padding: EdgeInsets.all(24),
+            padding: EdgeInsets.all(isLargeScreen ? 32 : isMediumScreen ? 28 : 24),
             child: Column(
               children: [
                 // Affiche
                 Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(isLargeScreen ? 20 : isMediumScreen ? 18 : 16),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.2),
-                        blurRadius: 15,
-                        offset: Offset(0, 8),
+                        blurRadius: isLargeScreen ? 20 : isMediumScreen ? 18 : 15,
+                        offset: Offset(0, isLargeScreen ? 10 : isMediumScreen ? 9 : 8),
                       ),
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(isLargeScreen ? 20 : isMediumScreen ? 18 : 16),
                     child: WidgetsToImage(
                       controller: controller,
                       child: Stack(
@@ -473,22 +513,22 @@ class ViewUser extends StatelessWidget {
                         children: [
                           Image(
                             image: AssetImage(Assets.image("affiche.png")),
-                            width: 300,
+                            width: isLargeScreen ? 400 : isMediumScreen ? 350 : 300,
                           ),
                           
                           // QR Code
                           Positioned(
-                            top: 180.0,
+                            top: isLargeScreen ? 240.0 : isMediumScreen ? 210.0 : 180.0,
                             child: Container(
-                              padding: EdgeInsets.all(8),
+                              padding: EdgeInsets.all(isLargeScreen ? 12 : isMediumScreen ? 10 : 8),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(isLargeScreen ? 16 : isMediumScreen ? 14 : 12),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 10,
-                                    offset: Offset(0, 5),
+                                    blurRadius: isLargeScreen ? 15 : isMediumScreen ? 12 : 10,
+                                    offset: Offset(0, isLargeScreen ? 8 : isMediumScreen ? 6 : 5),
                                   ),
                                 ],
                               ),
@@ -503,28 +543,29 @@ class ViewUser extends StatelessWidget {
                                   dataModuleShape: QrDataModuleShape.circle,
                                   color: Colors.black,
                                 ),
-                                padding: EdgeInsets.all(6),
-                                size: 150,
+                                padding: EdgeInsets.all(isLargeScreen ? 8 : isMediumScreen ? 7 : 6),
+                                size: isLargeScreen ? 200 : isMediumScreen ? 175 : 150,
                               ),
                             ),
                           ),
                           
                           // URL
                           Positioned(
-                            bottom: 10,
+                            bottom: isLargeScreen ? 15 : isMediumScreen ? 12 : 10,
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
                                   Icons.link,
                                   color: Colors.white,
-                                  size: 20,
+                                  size: isLargeScreen ? 24 : isMediumScreen ? 22 : 20,
                                 ),
-                                8.w,
+                                (isLargeScreen ? 12 : isMediumScreen ? 10 : 8).w,
                                 EText(
                                   "eboite.co/${element.id.toUpperCase()}",
                                   color: Colors.white,
-                            size: 40,
+                                  font: Fonts.poppinsBold,
+                                  size: isLargeScreen ? 48 : isMediumScreen ? 44 : 40,
                                 ),
                               ],
                             ),
@@ -535,7 +576,7 @@ class ViewUser extends StatelessWidget {
                   ),
                 ),
                 
-                24.h,
+                (isLargeScreen ? 32 : isMediumScreen ? 28 : 24).h,
                 
                 // Bouton de téléchargement
                 Container(
@@ -550,22 +591,24 @@ class ViewUser extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.color500,
                       foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                      padding: EdgeInsets.symmetric(
+                        vertical: isLargeScreen ? 20 : isMediumScreen ? 18 : 16
+                      ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(isLargeScreen ? 20 : isMediumScreen ? 18 : 16),
                       ),
                       elevation: 2,
                     ),
                     icon: Icon(
                       Icons.download_rounded,
-                      size: 20,
+                      color: Colors.white,
+                      size: isLargeScreen ? 24 : isMediumScreen ? 22 : 20,
                     ),
-                    label: Text(
+                    label: EText(
                       "Télécharger l'affiche",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      size: isLargeScreen ? 18 : isMediumScreen ? 17 : 16,
+                      color: Colors.white,
+                      weight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -612,37 +655,29 @@ class ViewUser extends StatelessWidget {
               
               24.h,
               
-              Text(
+              EText(
                 "Limite d'abonnement",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.grey[800],
-                ),
+                size: 20,
+                weight: FontWeight.w700,
+                color: Colors.grey[800],
               ),
               
               16.h,
               
-              Text(
+              EText(
                 "Avec votre abonnement Standard, vous pouvez créer une seule entreprise.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                  height: 1.4,
-                ),
+                align: TextAlign.center,
+                size: 16,
+                color: Colors.grey[600],
               ),
               
               8.h,
               
-              Text(
+              EText(
                 "Pour créer plusieurs entreprises, passez à l'abonnement Premium.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                  height: 1.4,
-                ),
+                align: TextAlign.center,
+                size: 16,
+                color: Colors.grey[600],
               ),
               
               24.h,
@@ -663,12 +698,10 @@ class ViewUser extends StatelessWidget {
                     ),
                     elevation: 2,
                   ),
-                  child: Text(
+                  child: EText(
                     "Changer d'abonnement",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    size: 16,
+                    weight: FontWeight.w600,
                   ),
                 ),
               ),

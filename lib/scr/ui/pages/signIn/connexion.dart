@@ -733,7 +733,7 @@ class Connexion extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors.orange[600],
+                      color: Color(0xFFFF2600),
                       height: 1.4,
                       fontWeight: FontWeight.w500,
                     ),

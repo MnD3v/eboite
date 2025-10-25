@@ -592,7 +592,7 @@ class _HomePageState extends State<HomePage> {
       ));
       return;
     }
-    var sieges = (<String>[]).obs;
+    var sieges = (<Siege>[]).obs;
 
     Get.dialog(SetEntreprise(
       description: description,

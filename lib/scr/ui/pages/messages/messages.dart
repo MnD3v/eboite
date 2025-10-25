@@ -6,6 +6,7 @@ import 'package:immobilier_apk/scr/ui/pages/messages/widgets/message_card.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:lottie/lottie.dart';
 import 'package:my_widgets/real_state/models/entreprise.dart';
+
 import 'package:my_widgets/real_state/models/message.dart';
 
 class Messages extends StatefulWidget {
@@ -22,7 +23,11 @@ class _MessagesState extends State<Messages> {
   var inView = false.obs;
 
   var categories = <String>[].obs;
-  var sieges = <String>[].obs;
+  var sieges = <Siege>[].obs;
+  
+  // Variables pour le filtrage par date
+  var dateDebut = Rxn<DateTime>();
+  var dateFin = Rxn<DateTime>();
 
   var tousLesCategories = ["Suggestion", "Plainte", "Idée", "Appréciation"];
 
@@ -282,6 +287,159 @@ class _MessagesState extends State<Messages> {
           padding: EdgeInsets.all(9),
           child: Obx(
             () => EColumn(children: [
+              // Section Filtrage par date
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  12.h,
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: EText(
+                      "Période",
+                      size: 28,
+                      weight: FontWeight.bold,
+                    ),
+                  ),
+                  
+                  // Sélection date de début
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              EText(
+                                "Date de début",
+                                size: 16,
+                                weight: FontWeight.w600,
+                              ),
+                              8.h,
+                              GestureDetector(
+                                onTap: () async {
+                                  final date = await showDatePicker(
+                                    context: context,
+                                    initialDate: dateDebut.value ?? DateTime.now(),
+                                    firstDate: DateTime(2020),
+                                    lastDate: DateTime.now(),
+                                  );
+                                  if (date != null) {
+                                    dateDebut.value = date;
+                                  }
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey[300]!),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.calendar_today, size: 20, color: Colors.grey[600]),
+                                      8.w,
+                                      EText(
+                                        dateDebut.value != null 
+                                          ? "${dateDebut.value!.day}/${dateDebut.value!.month}/${dateDebut.value!.year}"
+                                          : "Sélectionner",
+                                        color: dateDebut.value != null ? Colors.black : Colors.grey[600],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        
+                        16.w,
+                        
+                        // Sélection date de fin
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              EText(
+                                "Date de fin",
+                                size: 16,
+                                weight: FontWeight.w600,
+                              ),
+                              8.h,
+                              GestureDetector(
+                                onTap: () async {
+                                  final date = await showDatePicker(
+                                    context: context,
+                                    initialDate: dateFin.value ?? DateTime.now(),
+                                    firstDate: dateDebut.value ?? DateTime(2020),
+                                    lastDate: DateTime.now(),
+                                  );
+                                  if (date != null) {
+                                    dateFin.value = date;
+                                  }
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey[300]!),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.calendar_today, size: 20, color: Colors.grey[600]),
+                                      8.w,
+                                      EText(
+                                        dateFin.value != null 
+                                          ? "${dateFin.value!.day}/${dateFin.value!.month}/${dateFin.value!.year}"
+                                          : "Sélectionner",
+                                        color: dateFin.value != null ? Colors.black : Colors.grey[600],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  // Bouton pour effacer les dates
+                  if (dateDebut.value != null || dateFin.value != null) ...[
+                    12.h,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          dateDebut.value = null;
+                          dateFin.value = null;
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.red[50],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.red[200]!),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.clear, size: 16, color: Colors.red[600]),
+                              4.w,
+                              EText(
+                                "Effacer les dates",
+                                size: 14,
+                                color: Colors.red[600],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              
               widget.currentEntreprise.sieges.length < 2
                   ? 0.h
                   : Column(
@@ -298,15 +456,15 @@ class _MessagesState extends State<Messages> {
                         ),
                         ...widget.currentEntreprise.sieges.map((element) {
                           return CheckboxListTile(
-                            value: sieges.contains(element),
+                            value: sieges.any((siege) => siege.nom == element.nom),
                             onChanged: (value) {
-                              if (!sieges.contains(element)) {
+                              if (!sieges.any((siege) => siege.nom == element.nom)) {
                                 sieges.add(element);
                               } else {
-                                sieges.remove(element);
+                                sieges.removeWhere((siege) => siege.nom == element.nom);
                               }
                             },
-                            title: EText(element),
+                            title: EText(element.nom),
                           );
                         }),
                       ],
@@ -347,8 +505,43 @@ class _MessagesState extends State<Messages> {
 
                       if (widget.currentEntreprise.sieges.length > 2) {
                         messages.value = messages
-                            .where((element) => sieges.contains(element.siege))
+                            .where((element) => sieges.any((siege) => siege.nom == element.siege))
                             .toList();
+                      }
+                      
+                      // Filtrage par date
+                      if (dateDebut.value != null || dateFin.value != null) {
+                        messages.value = messages.where((element) {
+                          try {
+                            // Parser la date du message (format attendu: "dd/MM/yyyy" ou "yyyy-MM-dd")
+                            DateTime messageDate;
+                            if (element.date.contains('/')) {
+                              // Format dd/MM/yyyy
+                              List<String> parts = element.date.split('/');
+                              messageDate = DateTime(
+                                int.parse(parts[2]), // année
+                                int.parse(parts[1]), // mois
+                                int.parse(parts[0]), // jour
+                              );
+                            } else {
+                              // Format yyyy-MM-dd ou autre format ISO
+                              messageDate = DateTime.parse(element.date);
+                            }
+                            
+                            bool isAfterStart = dateDebut.value == null || 
+                                messageDate.isAfter(dateDebut.value!) || 
+                                messageDate.isAtSameMomentAs(dateDebut.value!);
+                            
+                            bool isBeforeEnd = dateFin.value == null || 
+                                messageDate.isBefore(dateFin.value!.add(Duration(days: 1))) || 
+                                messageDate.isAtSameMomentAs(dateFin.value!);
+                            
+                            return isAfterStart && isBeforeEnd;
+                          } catch (e) {
+                            // Si la date ne peut pas être parsée, inclure le message
+                            return true;
+                          }
+                        }).toList();
                       }
                     });
                   },
