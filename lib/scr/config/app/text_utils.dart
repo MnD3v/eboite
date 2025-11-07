@@ -42,6 +42,7 @@ class TextUtils {
   
   /// Widget qui affiche un texte avec formatage ** en gras
   static Widget buildFormattedText(String text, {
+    bool? selectable,
     Color? color,
     double? size,
     FontWeight? baseWeight,
@@ -54,7 +55,12 @@ class TextUtils {
       baseWeight: baseWeight
     );
     
-    return Text.rich(
+    return selectable == true ? SelectableText.rich(
+      TextSpan(children: spans),
+      textAlign: align ?? TextAlign.start,
+      maxLines: maxLines,
+      textScaleFactor: 0.7,
+    ) : Text.rich(
       TextSpan(children: spans),
       textAlign: align ?? TextAlign.start,
       maxLines: maxLines,

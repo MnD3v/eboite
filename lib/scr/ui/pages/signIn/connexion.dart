@@ -421,6 +421,8 @@ class Connexion extends StatelessWidget {
       if (q.docs.isNotEmpty) {
         var utilisateur = Utilisateur.fromMap(q.docs.first.data());
         Utilisateur.currentUser.value = utilisateur;
+
+      
         
         isLoading.value = false;
         

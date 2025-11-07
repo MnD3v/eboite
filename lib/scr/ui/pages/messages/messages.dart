@@ -56,7 +56,9 @@ class _MessagesState extends State<Messages> {
           for (var element in snapshot.data!.docs) {
             var msg = Message.fromMap(element.data());
             msg.id = element.id;
-            tempMessages.add(msg);
+            if(msg.siege != null && widget.currentEntreprise.sieges.any((siege) => siege.nom == msg.siege)) {
+              tempMessages.add(msg);
+            }
           }
         }
 

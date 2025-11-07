@@ -1,4 +1,6 @@
+import 'dart:typed_data';
 import 'package:immobilier_apk/scr/config/app/export.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:my_widgets/real_state/models/entreprise.dart';
 
 class SetEntreprise extends StatelessWidget {
@@ -11,7 +13,8 @@ class SetEntreprise extends StatelessWidget {
       required this.sieges,
       required this.description,
       required this.user,
-      this.notificationsSettings});
+      this.notificationsSettings,
+      this.existingLogoUrl});
 
   RxList<Siege> sieges;
   int? index;
@@ -21,10 +24,14 @@ class SetEntreprise extends StatelessWidget {
   RxList<String> selectedItems;
   String id;
   NotificationSettings? notificationsSettings;
+  String? existingLogoUrl;
   
   // Variables pour les notifications
   final RxBool notificationsEnabled = false.obs;
   final RxList<String> notificationEmails = <String>[].obs;
+  
+  // Variable pour l'image du logo (utilisation de Uint8List pour compatibilité web)
+  final Rxn<Uint8List> logoBytes = Rxn<Uint8List>();
   @override
   Widget build(BuildContext context) {
     // Initialiser les valeurs si on est en mode modification
@@ -146,6 +153,153 @@ class SetEntreprise extends StatelessWidget {
                       icon: Icons.description_outlined,
                       maxLines: 3,
                     ),
+                    20.h,
+
+                    // Logo de l'entreprise
+                    _buildSectionHeader("Logo de l'entreprise", Icons.image_outlined),
+                    16.h,
+                    
+                    Obx(() => GestureDetector(
+                      onTap: _pickLogo,
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: (logoBytes.value != null || existingLogoUrl != null)
+                              ? Color(0xFFFF2600) 
+                              : Colors.grey[300]!,
+                            width: (logoBytes.value != null || existingLogoUrl != null) ? 2 : 1,
+                          ),
+                        ),
+                        child: logoBytes.value == null && existingLogoUrl == null
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFFFF2600).withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(
+                                    Icons.add_photo_alternate_outlined,
+                                    color: Color(0xFFFF2600),
+                                    size: 40,
+                                  ),
+                                ),
+                                16.h,
+                                EText(
+                                  "Cliquez pour ajouter un logo",
+                                  size: 16,
+                                  weight: FontWeight.w600,
+                                  color: Colors.black,
+                                ),
+                                8.h,
+                                EText(
+                                  "Format recommandé: PNG ou JPG",
+                                  size: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ],
+                            )
+                          : Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: logoBytes.value != null
+                                    ? Image.memory(
+                                        logoBytes.value!,
+                                        height: 150,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.network(
+                                        existingLogoUrl!,
+                                        height: 150,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                        loadingBuilder: (context, child, loadingProgress) {
+                                          if (loadingProgress == null) return child;
+                                          return Container(
+                                            height: 150,
+                                            color: Colors.grey[200],
+                                            child: Center(
+                                              child: CircularProgressIndicator(
+                                                color: Color(0xFFFF2600),
+                                                strokeWidth: 2,
+                                                value: loadingProgress.expectedTotalBytes != null
+                                                  ? loadingProgress.cumulativeBytesLoaded / 
+                                                    loadingProgress.expectedTotalBytes!
+                                                  : null,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Container(
+                                            height: 150,
+                                            color: Colors.grey[200],
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.error_outline,
+                                                  color: Colors.grey[400],
+                                                  size: 40,
+                                                ),
+                                                8.h,
+                                                EText(
+                                                  "Erreur de chargement",
+                                                  size: 12,
+                                                  color: Colors.grey[600],
+                                                ),
+                                                4.h,
+                                                EText(
+                                                  "Vérifiez la configuration CORS",
+                                                  size: 10,
+                                                  color: Colors.grey[500],
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                ),
+                                Positioned(
+                                  top: 8,
+                                  right: 8,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      logoBytes.value = null;
+                                      existingLogoUrl = null;
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.2),
+                                            blurRadius: 4,
+                                          ),
+                                        ],
+                                      ),
+                                      child: Icon(
+                                        Icons.delete_outline,
+                                        color: Color(0xFFFF2600),
+                                        size: 20,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                      ),
+                    )),
                     20.h,
                     
                     // ID (seulement pour nouvelle entreprise)
@@ -1215,6 +1369,39 @@ class SetEntreprise extends StatelessWidget {
     );
   }
 
+  Future<void> _pickLogo() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+      
+      if (image != null) {
+        // Lire les bytes de manière asynchrone (compatible web et mobile)
+        final bytes = await image.readAsBytes();
+        logoBytes.value = bytes;
+      }
+    } catch (e) {
+      Toasts.error(Get.context!, description: "Erreur lors de la sélection de l'image");
+    }
+  }
+
+  Future<String?> _uploadLogo() async {
+    if (logoBytes.value == null) return null;
+    
+    try {
+      // Upload via FStorage.putData (compatible web et mobile)
+      final logoUrl = await FStorage.putData(logoBytes.value!);
+      return logoUrl;
+    } catch (e) {
+      print('Erreur lors de l\'upload du logo: $e');
+      return null;
+    }
+  }
+
   Future<void> _handleSave() async {
     if (nom.isEmpty) {
       Toasts.error(Get.context!, description: "Veuillez saisir le nom de l'entreprise");
@@ -1244,6 +1431,17 @@ class SetEntreprise extends StatelessWidget {
       return;
     }
     
+    // Upload du logo vers Firebase Storage si un fichier a été sélectionné
+    String? logoUrl = existingLogoUrl; // Conserver le logo existant par défaut
+    if (logoBytes.value != null) {
+      logoUrl = await _uploadLogo();
+      if (logoUrl == null) {
+        Get.back();
+        Toasts.error(Get.context!, description: "Erreur lors de l'upload du logo");
+        return;
+      }
+    }
+    
     // Créer les paramètres de notification
     NotificationSettings? notificationSettings;
     if (notificationsEnabled.value) {
@@ -1259,6 +1457,7 @@ class SetEntreprise extends StatelessWidget {
       auteur: user.telephone.numero,
       nom: nom,
       id: id.toLowerCase(),
+      logo: logoUrl,
       categories: selectedItems,
       notificationsSettings: notificationSettings,
     ).toMap());
@@ -1269,6 +1468,7 @@ class SetEntreprise extends StatelessWidget {
         nom: nom,
         id: id,
         auteur: user.telephone.numero,
+        logo: logoUrl,
         categories: selectedItems,
         sieges: sieges.toList(),
         notificationsSettings: notificationSettings,
@@ -1279,6 +1479,7 @@ class SetEntreprise extends StatelessWidget {
         nom: nom,
         id: id,
         auteur: user.telephone.numero,
+        logo: logoUrl,
         categories: selectedItems,
         sieges: sieges.toList(),
         notificationsSettings: notificationSettings,

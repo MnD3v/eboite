@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
     return StreamBuilder(
       stream: DB
           .firestore(Collections.utilistateurs)
-          .doc(user.telephone.numero)
+          .doc(user.email)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {}

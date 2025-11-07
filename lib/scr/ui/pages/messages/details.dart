@@ -151,11 +151,12 @@ class MessageDetails extends StatelessWidget {
 
 
         // Contenu du message
-        SelectableText(
-          message.message,
-          style: TextStyle( fontSize: 19 ),
-          textScaleFactor: .7,
-        ),
+        TextUtils.buildFormattedText(
+          selectable: true,
+                        message.message,
+                        color: Colors.grey[900],
+                        baseWeight: FontWeight.w400,
+                      ),
       ],
     );
   }

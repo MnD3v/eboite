@@ -1,0 +1,37 @@
+rules_version = '2';
+
+// Firebase Storage Security Rules
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Règles pour les images générales
+    match /images/{imageId} {
+      // Lecture publique pour tout le monde
+      allow read: if true;
+      
+      // Écriture uniquement pour les utilisateurs authentifiés
+      allow write: if request.auth != null;
+    }
+    
+    // Règles pour les logos d'entreprise
+    match /logos/{imageId} {
+      // Lecture publique pour tout le monde
+      allow read: if true;
+      
+      // Écriture uniquement pour les utilisateurs authentifiés
+      allow write: if request.auth != null;
+    }
+    
+    // Règle par défaut pour tout le reste
+    match /{allPaths=**} {
+      // Lecture publique
+      allow read: if true;
+      
+      // Écriture uniquement pour les utilisateurs authentifiés
+      allow write: if request.auth != null;
+    }
+  }
+}
+
+
+

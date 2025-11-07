@@ -14,34 +14,30 @@ import 'package:widgets_to_image/widgets_to_image.dart';
 class ViewUser extends StatelessWidget {
   ViewUser({super.key, required this.utilisateur});
 
-  var sieges = (<Siege>[]).obs;
+  final RxList<Siege> sieges = <Siege>[].obs;
   final Utilisateur utilisateur;
   
   @override
   Widget build(BuildContext context) {
-    var screenWidth = MediaQuery.of(context).size.width;
-    var isLargeScreen = screenWidth > 1200;
-    var isMediumScreen = screenWidth > 800 && screenWidth <= 1200;
-    
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
       ),
       child: EScaffold(
         color: Colors.white,
-        appBar: _buildAppBar(isLargeScreen, isMediumScreen),
+        appBar: _buildAppBar(),
         body: utilisateur.entreprises.isEmpty
-            ? _buildEmptyState(isLargeScreen, isMediumScreen)
-            : _buildEntreprisesList(isLargeScreen, isMediumScreen),
+            ? _buildEmptyState()
+            : _buildEntreprisesList(),
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar(bool isLargeScreen, bool isMediumScreen) {
+  PreferredSizeWidget _buildAppBar() {
     return AppBar(
       title: EText(
         "Mes entreprises",
-        size: isLargeScreen ? 28 : isMediumScreen ? 26 : 24,
+        size: 24,
         weight: FontWeight.w700,
         color: Colors.white,
       ),
@@ -51,7 +47,7 @@ class ViewUser extends StatelessWidget {
       elevation: 0,
       actions: [
         Container(
-          margin: EdgeInsets.only(right: isLargeScreen ? 32 : isMediumScreen ? 24 : 20),
+          margin: EdgeInsets.only(right: 20),
           child: Material(
             color: Colors.transparent,
             child: InkWell(
@@ -59,8 +55,8 @@ class ViewUser extends StatelessWidget {
               onTap: () => _showCreateEntrepriseDialog(),
               child: Container(
                 padding: EdgeInsets.symmetric(
-                  horizontal: isLargeScreen ? 24 : isMediumScreen ? 20 : 20, 
-                  vertical: isLargeScreen ? 16 : isMediumScreen ? 14 : 12
+                  horizontal: 20, 
+                  vertical: 12
                 ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -86,14 +82,14 @@ class ViewUser extends StatelessWidget {
                     Icon(
                       Icons.add_business_outlined,
                       color: Colors.white,
-                      size: isLargeScreen ? 24 : isMediumScreen ? 22 : 20,
+                      size: 20,
                   ),
-                    (isLargeScreen ? 12 : isMediumScreen ? 10 : 8).w,
+                    8.w,
                   EText(
                     "Créer une entreprise",
                     color: Colors.white,
                     weight: FontWeight.w700,
-                    size: isLargeScreen ? 18 : isMediumScreen ? 17 : 16,
+                    size: 16,
                   ),
                   ],
                 ),
@@ -105,51 +101,51 @@ class ViewUser extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState(bool isLargeScreen, bool isMediumScreen) {
+  Widget _buildEmptyState() {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(isLargeScreen ? 48 : isMediumScreen ? 40 : 32),
+        padding: EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Animation Lottie
             Container(
-              height: Get.width * (isLargeScreen ? 0.4 : isMediumScreen ? 0.5 : 0.6),
-              width: Get.width * (isLargeScreen ? 0.4 : isMediumScreen ? 0.5 : 0.6),
+              height: Get.width * 0.6,
+              width: Get.width * 0.6,
               child: Lottie.asset(
                 'assets/lotties/empty.json',
                 fit: BoxFit.contain,
               ),
             ),
             
-            (isLargeScreen ? 48 : isMediumScreen ? 40 : 32).h,
+            32.h,
             
             // Titre
             EText(
               "Aucune entreprise disponible",
               align: TextAlign.center,
-              size: isLargeScreen ? 32 : isMediumScreen ? 28 : 24,
+              size: 24,
               weight: FontWeight.w700,
               color: Colors.white,
             ),
             
-            (isLargeScreen ? 24 : isMediumScreen ? 20 : 16).h,
+            16.h,
             
             // Description
             EText(
               "Créez votre première entreprise pour commencer à recevoir des retours de vos clients",
               align: TextAlign.center,
-              size: isLargeScreen ? 20 : isMediumScreen ? 18 : 16,
+              size: 16,
               color: Colors.white.withOpacity(0.8),
             ),
             
-            (isLargeScreen ? 60 : isMediumScreen ? 50 : 40).h,
+            40.h,
             
             // Bouton d'action
             Container(
               width: double.infinity,
               constraints: BoxConstraints(
-                maxWidth: isLargeScreen ? 400 : isMediumScreen ? 350 : double.infinity,
+                maxWidth: 350,
               ),
               child: ElevatedButton.icon(
                 onPressed: () => _showCreateEntrepriseDialog(),
@@ -157,7 +153,7 @@ class ViewUser extends StatelessWidget {
                   backgroundColor: AppColors.color500,
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(
-                    vertical: isLargeScreen ? 20 : isMediumScreen ? 18 : 16
+                    vertical: 16
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -166,11 +162,11 @@ class ViewUser extends StatelessWidget {
                 ),
                 icon: Icon(
                   Icons.add_business_outlined,
-                  size: isLargeScreen ? 24 : isMediumScreen ? 22 : 20,
+                  size: 20,
                 ),
                 label: EText(
                   "Créer une entreprise",
-                  size: isLargeScreen ? 18 : isMediumScreen ? 17 : 16,
+                  size: 16,
                   weight: FontWeight.w600,
                 ),
               ),
@@ -181,22 +177,18 @@ class ViewUser extends StatelessWidget {
     );
   }
 
-  Widget _buildEntreprisesList(bool isLargeScreen, bool isMediumScreen) {
+  Widget _buildEntreprisesList() {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(isLargeScreen ? 32 : isMediumScreen ? 24 : 20),
+      padding: EdgeInsets.all(24),
       child: Center(
         child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: isLargeScreen ? 1200 : isMediumScreen ? 900 : double.infinity,
-          ),
+          constraints: BoxConstraints(maxWidth: 900),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              (isLargeScreen ? 32 : isMediumScreen ? 28 : 24).h,
-              
-              // Titre de section
+              24.h,
               Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(isLargeScreen ? 32 : isMediumScreen ? 24 : 20),
+                padding: EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
@@ -206,7 +198,7 @@ class ViewUser extends StatelessWidget {
                       AppColors.color500.withOpacity(0.7),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(isLargeScreen ? 32 : isMediumScreen ? 28 : 24),
+                  borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.color500.withOpacity(0.3),
@@ -220,37 +212,34 @@ class ViewUser extends StatelessWidget {
                     Icon(
                       Icons.business_rounded,
                       color: Colors.white,
-                      size: isLargeScreen ? 56 : isMediumScreen ? 48 : 40,
+                      size: 40,
                     ),
-                    (isLargeScreen ? 24 : isMediumScreen ? 20 : 16).h,
+                    16.h,
                     EText(
                       "Gérez vos entreprises",
                       align: TextAlign.center,
-                      size: isLargeScreen ? 28 : isMediumScreen ? 24 : 20,
+                      size: 22,
                       weight: FontWeight.w700,
                       color: Colors.white,
                     ),
-                    (isLargeScreen ? 12 : isMediumScreen ? 10 : 8).h,
+                    12.h,
                     EText(
                       "Téléchargez vos affiches et modifiez vos informations",
                       align: TextAlign.center,
-                      size: isLargeScreen ? 20 : isMediumScreen ? 18 : 16,
+                      size: 16,
                       color: Colors.white.withOpacity(0.9),
                     ),
                   ],
                 ),
               ),
-              
-              (isLargeScreen ? 48 : isMediumScreen ? 40 : 32).h,
-              
-              // Liste des entreprises - Layout responsive
-              isLargeScreen 
-                ? _buildLargeScreenGrid()
-                : isMediumScreen 
-                  ? _buildMediumScreenGrid()
-                  : _buildMobileList(),
-              
-              (isLargeScreen ? 60 : isMediumScreen ? 50 : 40).h,
+              32.h,
+              for (int i = 0; i < utilisateur.entreprises.length; i++) ...[
+                if(utilisateur.entreprises[i].auteur == utilisateur.telephone.numero) ...[
+                  _buildEntrepriseCard(utilisateur.entreprises[i]),
+                ],
+                if (i != utilisateur.entreprises.length - 1) 24.h,
+              ],
+              40.h,
             ],
           ),
         ),
@@ -258,66 +247,235 @@ class ViewUser extends StatelessWidget {
     );
   }
 
-  Widget _buildLargeScreenGrid() {
-    return Wrap(
-      spacing: 24,
-      runSpacing: 24,
-      children: utilisateur.entreprises.map((element) {
-        return SizedBox(
-          width: (1200 - 64 - 24) / 2, // 2 colonnes avec espacement et padding
-          child: _buildEntrepriseCard(element, true, false),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildMediumScreenGrid() {
-    return Wrap(
-      spacing: 20,
-      runSpacing: 20,
-      children: utilisateur.entreprises.map((element) {
-        return SizedBox(
-          width: (900 - 48 - 20) / 2, // 2 colonnes avec espacement et padding
-          child: _buildEntrepriseCard(element, false, true),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildMobileList() {
-    return Wrap(
-      spacing: 16,
-      runSpacing: 16,
-      children: utilisateur.entreprises.map((element) {
-        return SizedBox(
-          width: (Get.width - 40 - 16) / 2, // 2 colonnes avec espacement
-          child: _buildEntrepriseCard(element, false, false),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildEntrepriseCard(RealEntreprise element, [bool isLargeScreen = false, bool isMediumScreen = false]) {
+  Widget _buildEntrepriseCard(RealEntreprise element) {
     WidgetsToImageController controller = WidgetsToImageController();
-    
+
+    Widget actionButton({
+      required Color backgroundColor,
+      required IconData icon,
+      required VoidCallback onTap,
+    }) {
+      return Container(
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: onTap,
+            child: Padding(
+              padding: EdgeInsets.all(14),
+              child: Icon(
+                icon,
+                color: Colors.white,
+                size: 22,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    Widget buildInviteButton() {
+      return actionButton(
+        backgroundColor: Colors.green.withOpacity(0.2),
+        icon: Icons.person_add,
+        onTap: () {
+          final RxSet<Siege> selectedCellules = <Siege>{}.obs;
+          String email = "";
+          Get.dialog(
+            Dialog(
+              insetPadding: EdgeInsets.all(16),
+              child: Container(
+                constraints: BoxConstraints(maxWidth: 600),
+                padding: EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    EText(
+                      "Inviter un utilisateur",
+                      size: 20,
+                      weight: FontWeight.w700,
+                      color: Colors.grey[900],
+                    ),
+                    24.h,
+                    ETextField(
+                      placeholder: "Adresse email",
+                      onChanged: (value) {
+                        email = value;
+                      },
+                      phoneScallerFactor: phoneScallerFactor,
+                    ),
+                    if (element.sieges.length > 1) ...[
+                      24.h,
+                      EText(
+                        "Sélectionnez les cellules auxquelles cet utilisateur aura accès",
+                        size: 14,
+                        weight: FontWeight.w600,
+                        color: Colors.grey[800],
+                      ),
+                      12.h,
+                      Obx(() => Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: element.sieges.map((siege) {
+                              final bool isSelected = selectedCellules.contains(siege);
+                              return GestureDetector(
+                                onTap: () {
+                                  if (isSelected) {
+                                    selectedCellules.remove(siege);
+                                  } else {
+                                    selectedCellules.add(siege);
+                                  }
+                                },
+                                child: AnimatedContainer(
+                                  duration: Duration(milliseconds: 180),
+                                  padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? AppColors.color500.withOpacity(0.12)
+                                        : Colors.white,
+                                    borderRadius: BorderRadius.circular(18),
+                                    border: Border.all(
+                                      color: isSelected ? AppColors.color500 : Colors.grey[300]!,
+                                      width: 1.3,
+                                    ),
+                                    boxShadow: [
+                                      if (isSelected)
+                                        BoxShadow(
+                                          color: AppColors.color500.withOpacity(0.18),
+                                          blurRadius: 12,
+                                          offset: Offset(0, 4),
+                                        ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        isSelected ? Icons.check_circle : Icons.circle_outlined,
+                                        size: 18,
+                                        color: isSelected ? AppColors.color500 : Colors.grey[500],
+                                      ),
+                                      8.w,
+                                      EText(
+                                        siege.nom,
+                                        size: 14,
+                                        weight: FontWeight.w500,
+                                        color: isSelected ? AppColors.color500 : Colors.grey[800],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          )),
+                    ],
+                    24.h,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: SimpleOutlineButton(
+                            onTap: () {
+                              Get.back();
+                            },
+                            text: "Annuler",
+                          ),
+                        ),
+                        16.w,
+                        Expanded(
+                          child: SimpleButton(
+                            onTap: () async {
+                            if(email.isEmpty) {
+                              Toasts.error(Get.context!, description: "Veuillez saisir une adresse email");
+                              return;
+                            }
+                            if (!GFunctions.isEmail(email)) {
+                              Toasts.error(Get.context!, description: "Veuillez saisir une adresse email valide");
+                              return;
+                            }
+                            loading();
+                            var qUtilisateur = await  DB.firestore(Collections.utilistateurs).doc(email).get();   
+                            if (qUtilisateur.exists) {
+                              
+                              var utilisateur = Utilisateur.fromMap(qUtilisateur.data()!);
+                              if(utilisateur.entreprises.any((entreprise) => entreprise.id == element.id)) {
+                                Get.back();
+                                Get.back();
+                                Toasts.error(Get.context!, description: "Utilisateur déjà ajouté");
+                                return;
+                              }
+                              var entreprise = element.copyWith(sieges: selectedCellules.toList());
+                              utilisateur.entreprises.add(entreprise);
+                              await Utilisateur.setUser(utilisateur);
+                              Get.back();
+                              Get.back();
+
+                              Toasts.success(Get.context!, description: "Utilisateur ajouté avec succès");
+                            }
+                            else{
+                              Get.back();
+                              Get.back();
+
+                              Toasts.error(Get.context!, description: "Utilisateur non trouvé");
+                            }
+
+                            },
+                            text: "Valider",
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    }
+
+    Widget buildEditButton() {
+      return actionButton(
+        backgroundColor: Colors.white.withOpacity(0.2),
+        icon: Icons.edit_outlined,
+        onTap: () {
+          Get.dialog(SetEntreprise(
+            index: utilisateur.entreprises.indexOf(element),
+            id: element.id,
+            nom: element.nom,
+            description: element.description,
+            selectedItems: RxList(element.categories),
+            sieges: RxList(element.sieges),
+            user: utilisateur,
+            notificationsSettings: element.notificationsSettings,
+            existingLogoUrl: element.logo,
+          ));
+        },
+      );
+    }
+
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(isLargeScreen ? 32 : isMediumScreen ? 28 : 24),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
-            blurRadius: isLargeScreen ? 24 : isMediumScreen ? 22 : 20,
-            offset: Offset(0, isLargeScreen ? 12 : isMediumScreen ? 11 : 10),
+            blurRadius: 20,
+            offset: Offset(0, 10),
             spreadRadius: 0,
           ),
         ],
       ),
       child: Column(
         children: [
-          // Header de l'entreprise
           Container(
-            padding: EdgeInsets.all(isLargeScreen ? 32 : isMediumScreen ? 28 : 24),
+            padding: EdgeInsets.all(24),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -328,184 +486,79 @@ class ViewUser extends StatelessWidget {
                 ],
               ),
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(isLargeScreen ? 32 : isMediumScreen ? 28 : 24),
-                topRight: Radius.circular(isLargeScreen ? 32 : isMediumScreen ? 28 : 24),
+                topLeft: Radius.circular(24),
+                topRight: Radius.circular(24),
               ),
             ),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: EdgeInsets.all(isLargeScreen ? 16 : isMediumScreen ? 14 : 12),
-                  decoration: BoxDecoration(
-                    color: AppColors.color500.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(isLargeScreen ? 20 : isMediumScreen ? 18 : 16),
-                  ),
-                  child: Icon(
-                    Icons.business,
-                    color: AppColors.color500,
-                    size: isLargeScreen ? 32 : isMediumScreen ? 28 : 24,
-                  ),
-                ),
-                
-                (isLargeScreen ? 20 : isMediumScreen ? 18 : 16).w,
-                
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      EText(
-                        element.nom,
-                        size: isLargeScreen ? 28 : isMediumScreen ? 26 : 22,
-                        weight: FontWeight.w700,
-                        color: Colors.white,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.color500.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      (isLargeScreen ? 12 : isMediumScreen ? 10 : 8).h,
-                      EText(
-                        "ID: ${element.id.toUpperCase()}",
-                        size: isLargeScreen ? 18 : isMediumScreen ? 16 : 14,
-                        color: Colors.white.withOpacity(0.8),
-                        font: 'monospace',
+                      child: Icon(
+                        Icons.business,
+                        color: AppColors.color500,
+                        size: 28,
                       ),
-                    ],
-                  ),
-                ),
-                     Container(
-                  decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(12),
-                      onTap: () {
-                        Get.dialog(
-                          Dialog(
-                            insetPadding: EdgeInsets.all(16),
-                            child: Container(
-                              padding: EdgeInsets.all(24),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // Titre
-                                  EText(
-                                    "Inviter un utilisateur",
-                                    size: 20,
-                                    weight: FontWeight.w700,
-                                    color: Colors.grey[900],
-                                  ),
-                                  
-                                  24.h,
-                                  
-                                  // Champ email
-                                  ETextField(
-                                    placeholder: "Adresse email",
-                                    onChanged: (value) {
-                                      // TODO: Gérer la saisie de l'email
-                                    },
-                                    phoneScallerFactor: phoneScallerFactor,
-                                  ),
-                                  
-                                  24.h,
-                                  
-                                  // Boutons
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: SimpleOutlineButton(
-                                          onTap: () {
-                                            Get.back();
-                                          },
-                                          text: "Annuler",
-                                        ),
-                                      ),
-                                      
-                                      16.w,
-                                      
-                                      Expanded(
-                                        child: SimpleButton(
-                                          onTap: () {
-                                            // TODO: Implémenter la validation
-                                            Get.back();
-                                          },
-                                          text: "Valider",
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
+                    ),
+                    16.w,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          EText(
+                            element.nom,
+                            size: 22,
+                            weight: FontWeight.w700,
+                            color: Colors.white,
                           ),
-                        );
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.all(12),
-                        child: Icon(
-                          Icons.person_add,
-                          color: Colors.white,
-                          size: 20,
-                        ),
+                          8.h,
+                          EText(
+                            "ID: ${element.id.toUpperCase()}",
+                            size: 14,
+                            color: Colors.white.withOpacity(0.8),
+                            font: 'monospace',
+                          ),
+                        ],
                       ),
                     ),
-                  ),
+                  ],
                 ),
-             
-                // Bouton d'édition
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(12),
-                      onTap: () {
-                        Get.dialog(SetEntreprise(
-                          index: utilisateur.entreprises.indexOf(element),
-                          id: element.id,
-                          nom: element.nom,
-                          description: element.description,
-                          selectedItems: RxList(element.categories),
-                          sieges: RxList(element.sieges),
-                          user: utilisateur,
-                        ));
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.all(12),
-                        child: Icon(
-                          Icons.edit_outlined,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
+                16.h,
+                Row(
+                  children: [
+                    Expanded(child: buildInviteButton()),
+                    12.w,
+                    Expanded(child: buildEditButton()),
+                  ],
                 ),
               ],
             ),
           ),
-          
-          // Affiche avec QR Code
           Container(
-            padding: EdgeInsets.all(isLargeScreen ? 32 : isMediumScreen ? 28 : 24),
+            padding: EdgeInsets.all(24),
             child: Column(
               children: [
-                // Affiche
                 Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(isLargeScreen ? 20 : isMediumScreen ? 18 : 16),
+                    borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.2),
-                        blurRadius: isLargeScreen ? 20 : isMediumScreen ? 18 : 15,
-                        offset: Offset(0, isLargeScreen ? 10 : isMediumScreen ? 9 : 8),
+                        blurRadius: 18,
+                        offset: Offset(0, 8),
                       ),
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(isLargeScreen ? 20 : isMediumScreen ? 18 : 16),
+                    borderRadius: BorderRadius.circular(20),
                     child: WidgetsToImage(
                       controller: controller,
                       child: Stack(
@@ -513,22 +566,20 @@ class ViewUser extends StatelessWidget {
                         children: [
                           Image(
                             image: AssetImage(Assets.image("affiche.png")),
-                            width: isLargeScreen ? 400 : isMediumScreen ? 350 : 300,
+                            width: 300,
                           ),
-                          
-                          // QR Code
                           Positioned(
-                            top: isLargeScreen ? 240.0 : isMediumScreen ? 210.0 : 180.0,
+                            top: 180,
                             child: Container(
-                              padding: EdgeInsets.all(isLargeScreen ? 12 : isMediumScreen ? 10 : 8),
+                              padding: EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(isLargeScreen ? 16 : isMediumScreen ? 14 : 12),
+                                borderRadius: BorderRadius.circular(14),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withOpacity(0.1),
-                                    blurRadius: isLargeScreen ? 15 : isMediumScreen ? 12 : 10,
-                                    offset: Offset(0, isLargeScreen ? 8 : isMediumScreen ? 6 : 5),
+                                    blurRadius: 12,
+                                    offset: Offset(0, 6),
                                   ),
                                 ],
                               ),
@@ -543,29 +594,27 @@ class ViewUser extends StatelessWidget {
                                   dataModuleShape: QrDataModuleShape.circle,
                                   color: Colors.black,
                                 ),
-                                padding: EdgeInsets.all(isLargeScreen ? 8 : isMediumScreen ? 7 : 6),
-                                size: isLargeScreen ? 200 : isMediumScreen ? 175 : 150,
+                                padding: EdgeInsets.all(6),
+                                size: 150,
                               ),
                             ),
                           ),
-                          
-                          // URL
                           Positioned(
-                            bottom: isLargeScreen ? 15 : isMediumScreen ? 12 : 10,
+                            bottom: 10,
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
                                   Icons.link,
                                   color: Colors.white,
-                                  size: isLargeScreen ? 24 : isMediumScreen ? 22 : 20,
+                                  size: 20,
                                 ),
-                                (isLargeScreen ? 12 : isMediumScreen ? 10 : 8).w,
+                                8.w,
                                 EText(
                                   "eboite.co/${element.id.toUpperCase()}",
                                   color: Colors.white,
                                   font: Fonts.poppinsBold,
-                                  size: isLargeScreen ? 48 : isMediumScreen ? 44 : 40,
+                                  size: 40,
                                 ),
                               ],
                             ),
@@ -575,10 +624,7 @@ class ViewUser extends StatelessWidget {
                     ),
                   ),
                 ),
-                
-                (isLargeScreen ? 32 : isMediumScreen ? 28 : 24).h,
-                
-                // Bouton de téléchargement
+                24.h,
                 Container(
                   width: double.infinity,
                   child: ElevatedButton.icon(
@@ -591,22 +637,20 @@ class ViewUser extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.color500,
                       foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(
-                        vertical: isLargeScreen ? 20 : isMediumScreen ? 18 : 16
-                      ),
+                      padding: EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(isLargeScreen ? 20 : isMediumScreen ? 18 : 16),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       elevation: 2,
                     ),
                     icon: Icon(
                       Icons.download_rounded,
                       color: Colors.white,
-                      size: isLargeScreen ? 24 : isMediumScreen ? 22 : 20,
+                      size: 20,
                     ),
                     label: EText(
                       "Télécharger l'affiche",
-                      size: isLargeScreen ? 18 : isMediumScreen ? 17 : 16,
+                      size: 16,
                       color: Colors.white,
                       weight: FontWeight.w600,
                     ),
@@ -713,6 +757,7 @@ class ViewUser extends StatelessWidget {
     }
     
     Get.dialog(SetEntreprise(
+      existingLogoUrl: null,
       description: description,
       nom: nom,
       id: id,
