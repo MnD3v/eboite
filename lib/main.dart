@@ -14,9 +14,9 @@ import 'package:immobilier_apk/scr/ui/pages/precache/precache.dart';
 import 'package:immobilier_apk/scr/ui/pages/update/update_page.dart';
 import 'package:my_widgets/real_state/models/message.dart' as message;
 
-String version = "1.0.0+11";
+String version = "1.0.0+12";
 
-Update update = Update(version: "1.0.0+11", optionel: false);
+Update update = Update(version: "1.0.0+12", optionel: false);
 
 double phoneScallerFactor = 1;
 

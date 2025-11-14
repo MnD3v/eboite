@@ -128,11 +128,13 @@ class MessageCard extends StatelessWidget {
                                     size: 14,
                                   ),
                                   4.w,
-                                  EText(
-                                    element.siege!,
-                                    color: Colors.grey[700],
-                                    size: 15,
-                                    weight: FontWeight.w500,
+                                  Flexible(
+                                    child: EText(
+                                      element.siege!,
+                                      color: Colors.grey[700],
+                                      size: 15,
+                                      weight: FontWeight.w500,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -142,31 +144,7 @@ class MessageCard extends StatelessWidget {
                           ],
                           
                           // Contact si disponible
-                          if (!element.contact.isNul) ...[
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.blue[50],
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.phone_outlined,
-                                    color: Colors.blue[600],
-                                    size: 14,
-                                  ),
-                                  4.w,
-                                  EText(
-                                    element.contact!,
-                                    color: Colors.blue[700],
-                                    weight: FontWeight.w500,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                          
                           
                           Spacer(),
                           
@@ -178,6 +156,7 @@ class MessageCard extends StatelessWidget {
                           ),
                         ],
                       ),
+                      
                     ],
                   ),
                 ),
