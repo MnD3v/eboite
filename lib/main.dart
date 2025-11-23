@@ -112,79 +112,77 @@ void main() async {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
- if(!kIsWeb){
+  if (!kIsWeb) {
     flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()!
-      .requestNotificationsPermission();
-   await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin>()
-      ?.requestPermissions(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-      onDidReceiveNotificationResponse: (details) async {
-    print(details.id);
-    print(id_datas);
-    var notificationData = id_datas[details.id];
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()!
+        .requestNotificationsPermission();
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onDidReceiveNotificationResponse: (details) async {
+      print(details.id);
+      print(id_datas);
+      var notificationData = id_datas[details.id];
 
-    if (notificationData == null) {
-      Get.to(const ErrorPage());
-    } else {
-      goToDetailPage(notificationData: notificationData);
-    }
-  }, onDidReceiveBackgroundNotificationResponse: notificationTapBackground);
+      if (notificationData == null) {
+        Get.to(const ErrorPage());
+      } else {
+        goToDetailPage(notificationData: notificationData);
+      }
+    }, onDidReceiveBackgroundNotificationResponse: notificationTapBackground);
 
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print("receiveeeeeeeeeeeeeeeeeee");
-    print(message.data['id']);
-    int notifID = Random().nextInt(999);
-    while (id_datas.containsKey(notifID)) {
-      notifID = Random().nextInt(999);
-    }
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("receiveeeeeeeeeeeeeeeeeee");
+      print(message.data['id']);
+      int notifID = Random().nextInt(999);
+      while (id_datas.containsKey(notifID)) {
+        notifID = Random().nextInt(999);
+      }
 
-    flutterLocalNotificationsPlugin.show(
-      notifID,
-      message.notification?.title,
-      message.notification?.body,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'moger',
-          'MOGER',
-          color: Color(0x00000000),
-        ),
-      ),
-    );
-
-    id_datas.putIfAbsent(
+      flutterLocalNotificationsPlugin.show(
         notifID,
-        () => {
-            'categorie': message.data['categorie'],
-            'message': message.data['message'],
-            'date': message.data['date']
-          });
-    print(id_datas);
+        message.notification?.title,
+        message.notification?.body,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'moger',
+            'MOGER',
+            color: Color(0x00000000),
+          ),
+        ),
+      );
 
-    if (message.notification != null) {}
-  });
+      id_datas.putIfAbsent(
+          notifID,
+          () => {
+                'categorie': message.data['categorie'],
+                'message': message.data['message'],
+                'date': message.data['date']
+              });
+      print(id_datas);
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+      if (message.notification != null) {}
+    });
 
-  FirebaseMessaging.onMessageOpenedApp.listen((event) async {
-    goToDetailPage(notificationData: event.data);
-  });
- }
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-
+    FirebaseMessaging.onMessageOpenedApp.listen((event) async {
+      goToDetailPage(notificationData: event.data);
+    });
+  }
 
   Paygate.init(
-  apiKey: '13c195ab-00aa-41a5-a8a5-5668cd77a623',
-  apiVersion: PaygateVersion.v1, // default PaygateVersion.v2
-  identifierLength: 20, // optional, default 20
-);
+    apiKey: '13c195ab-00aa-41a5-a8a5-5668cd77a623',
+    apiVersion: PaygateVersion.v1, // default PaygateVersion.v2
+    identifierLength: 20, // optional, default 20
+  );
 
   runApp(GetMaterialApp(
     debugShowCheckedModeBanner: false,
@@ -193,7 +191,6 @@ void main() async {
     defaultTransition: Transition.fadeIn,
     transitionDuration: 444.milliseconds,
   ));
-
 }
 
 void goToDetailPage({required Map<String, dynamic> notificationData}) async {
@@ -205,17 +202,14 @@ void goToDetailPage({required Map<String, dynamic> notificationData}) async {
       duration: 333.milliseconds,
     );
   } else {
-    
-      var msg = message.Message.fromMap(notificationData);
+    var msg = message.Message.fromMap(notificationData);
 
-      Get.dialog(MessageDetails(message: msg, entrepriseID: msg.entrepriseID??"",));
-
-  
-    
+    Get.dialog(MessageDetails(
+      message: msg,
+      entrepriseID: msg.entrepriseID ?? "",
+    ));
   }
 }
-
-
 
 Future<String?> getPaygateApiKey() async {
   DocumentSnapshot<Map<String, dynamic>> q;

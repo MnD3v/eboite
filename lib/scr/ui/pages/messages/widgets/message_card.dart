@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:immobilier_apk/scr/config/app/export.dart';
 import 'package:immobilier_apk/scr/config/app/message_colors.dart';
 import 'package:immobilier_apk/scr/config/app/text_utils.dart';
@@ -10,20 +11,29 @@ class MessageCard extends StatelessWidget {
     required this.element,
     required this.entrepriseID
   });
-  final entrepriseID;
-
+  
+  final String entrepriseID;
   final Message element;
 
   @override
   Widget build(BuildContext context) {
     final categoryColor = MessageColors.getCategoryColor(element.categorie);
-    final categoryIcon = _getCategoryIcon(element.categorie.toLowerCase());
     
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF9E9E9E).withOpacity(0.1),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Material(
-        elevation: 0,
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: () {
             Get.dialog(MessageDetails(
@@ -31,134 +41,87 @@ class MessageCard extends StatelessWidget {
               entrepriseID: entrepriseID,
             ));
           },
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.grey[200]!,
-                width: 1,
-              ),
-            ),
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header minimaliste avec catégorie
-                Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: categoryColor.withOpacity(0.08),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12),
-                      topRight: Radius.circular(12),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      // Badge de catégorie minimaliste
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: categoryColor,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              categoryIcon,
-                              color: Colors.white,
-                              size: 14,
-                            ),
-                            4.w,
-                            EText(
-                              element.categorie.toUpperCase(),
-                             color: Colors.white,
-                             size: 17,
-                            ),
-                          ],
-                        ),
+                // Header: Category Chip & Date
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: categoryColor.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      
-                      Spacer(),
-                      
-                      // Date discrète
-                      EText(
-                        _formatDate(element.date),
-                        color: Colors.grey,
-                      ),
-                    ],
-                  ),
-                ),
-                
-                // Contenu principal
-                Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Message principal avec typographie améliorée
-                      TextUtils.buildFormattedText(
-                        element.message.replaceAll("\n", " "),
-                        color: Colors.grey[900],
-                        baseWeight: FontWeight.w400,
-                        maxLines: 3,
-                      ),
-                      
-                      12.h,
-                      
-                      // Footer avec informations secondaires
-                      Row(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Siège si disponible
-                          if (element.siege != null) ...[
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[100],
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.location_on_outlined,
-                                    color: Colors.grey[600],
-                                    size: 14,
-                                  ),
-                                  4.w,
-                                  Flexible(
-                                    child: EText(
-                                      element.siege!,
-                                      color: Colors.grey[700],
-                                      size: 15,
-                                      weight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            
-                            8.w,
-                          ],
-                          
-                          // Contact si disponible
-                          
-                          
-                          Spacer(),
-                          
-                          // Indicateur de navigation subtil
                           Icon(
-                            Icons.arrow_forward_ios,
-                            color: Colors.grey[400],
+                            _getCategoryIcon(element.categorie),
                             size: 14,
+                            color: categoryColor,
+                          ),
+                          const SizedBox(width: 6),
+                          EText(
+                            element.categorie.toUpperCase(),
+                            color: categoryColor,
+                            size: 14,
+                            weight: FontWeight.w700,
+                            letterSpacing: 0.5,
                           ),
                         ],
                       ),
-                      
+                    ),
+                    const Spacer(),
+                    EText(
+                      _formatDate(element.date),
+                      color: Colors.grey.shade400,
+                      size: 14,
+                      weight: FontWeight.w500,
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 14),
+                
+                // Content
+                TextUtils.buildFormattedText(
+                  element.message.replaceAll("\n", " "),
+                  color: const Color(0xFF2D3436),
+                  size: 18,
+                  baseWeight: FontWeight.w500,
+                  maxLines: 3,
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Footer: Siege & Action
+                Row(
+                  children: [
+                    if (element.siege != null) ...[
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade50,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.location_on_rounded, size: 14, color: Colors.grey.shade400),
+                      ),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: EText(
+                          element.siege!,
+                          color: Colors.grey.shade600,
+                          size: 15,
+                          weight: FontWeight.w500,
+                        ),
+                      ),
                     ],
-                  ),
+                 
+                  ],
                 ),
               ],
             ),
@@ -171,15 +134,15 @@ class MessageCard extends StatelessWidget {
   IconData _getCategoryIcon(String category) {
     switch (category.toLowerCase()) {
       case "suggestion":
-        return Icons.lightbulb_outline;
+        return Icons.lightbulb_outline_rounded;
       case "plainte":
-        return Icons.report_problem_outlined;
+        return Icons.warning_amber_rounded;
       case "idée":
         return Icons.psychology_outlined;
       case "appréciation":
-        return Icons.favorite_outline;
+        return Icons.thumb_up_outlined;
       default:
-        return Icons.message_outlined;
+        return Icons.chat_bubble_outline_rounded;
     }
   }
 
@@ -195,5 +158,3 @@ class MessageCard extends StatelessWidget {
     }
   }
 }
-
-// Les couleurs sont maintenant définies dans MessageColors

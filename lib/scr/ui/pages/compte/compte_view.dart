@@ -12,256 +12,191 @@ class Compte extends StatelessWidget {
   Widget build(BuildContext context) {
     var screenWidth = MediaQuery.of(context).size.width;
     var isLargeScreen = screenWidth > 1200;
-    var isMediumScreen = screenWidth > 800 && screenWidth <= 1200;
-    
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-      ),
-      child: EScaffold(
-        color: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          title: EText(
+
+    return EScaffold(
+      color: const Color(0xFFF8F9FA), // Very light grey for a clean background
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: false,
+        title: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: EText(
             "Mon compte",
-            size: 22,
+            size: 28,
             font: Fonts.poppinsBold,
             weight: FontWeight.w700,
+            color: Colors.black87,
           ),
-          actions: [
-            Container(
-              margin: EdgeInsets.only(right: 16),
-              padding: EdgeInsets.all(isLargeScreen ? 10 : 8),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 24.0),
+            child: Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                Icons.settings_outlined,
                 color: Colors.white,
-                size: isLargeScreen ? 24 : 20,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.settings_outlined,
+                    color: Colors.black87, size: 24),
+                tooltip: "Paramètres",
               ),
             ),
-          ],
-        ),
-        body: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: isLargeScreen ? 48 : isMediumScreen ? 32 : 20,
-                vertical: isLargeScreen ? 40 : isMediumScreen ? 28 : 24,
-              ),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: isLargeScreen ? 1200 : isMediumScreen ? 900 : double.infinity,
-                  ),
-                  child: isLargeScreen 
-                    ? _buildLargeScreenLayout(isLargeScreen, isMediumScreen, context)
-                    : _buildMobileLayout(isLargeScreen, isMediumScreen, context),
+          ),
+        ],
+      ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            padding: EdgeInsets.symmetric(
+              horizontal: isLargeScreen ? 48 : 24,
+              vertical: 24,
+            ),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: isLargeScreen ? 800 : 600,
+                ),
+                child: Column(
+                  children: [
+                    _buildProfileCard(context),
+                    const SizedBox(height: 24),
+                    _buildEntreprisesCard(context),
+                    const SizedBox(height: 24),
+                    _buildMenuSection(context),
+                    const SizedBox(height: 32),
+                    _buildLogoutButton(context),
+                    const SizedBox(height: 40),
+                    _buildFooter(),
+                    const SizedBox(height: 20),
+                  ],
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildLargeScreenLayout(bool isLargeScreen, bool isMediumScreen, BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Colonne gauche - Profil et Plus
-        Expanded(
-          flex: 2,
-          child: Column(
-            children: [
-              _buildProfileSection(isLargeScreen, isMediumScreen),
-              
-              (isLargeScreen ? 32 : 24).h,
-              
-              _buildPlusSection(isLargeScreen, isMediumScreen),
-              
-              (isLargeScreen ? 40 : 32).h,
-              
-              _buildLogoutSection(context, isLargeScreen),
-            ],
-          ),
-        ),
-        
-        (isLargeScreen ? 32 : 24).w,
-        
-        // Colonne droite - Entreprises et Footer
-        Expanded(
-          flex: 2,
-          child: Column(
-            children: [
-              _buildEntreprisesSection(isLargeScreen, isMediumScreen),
-              
-              (isLargeScreen ? 40 : 32).h,
-              
-              _buildFooter(isLargeScreen),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMobileLayout(bool isLargeScreen, bool isMediumScreen, BuildContext context) {
-    return Column(
-      children: [
-        // Section profil utilisateur
-        _buildProfileSection(isLargeScreen, isMediumScreen),
-        
-        (isLargeScreen ? 32 : 24).h,
-        
-        // Section entreprises
-        _buildEntreprisesSection(isLargeScreen, isMediumScreen),
-        
-        (isLargeScreen ? 40 : 32).h,
-        
-        // Section plus
-        _buildPlusSection(isLargeScreen, isMediumScreen),
-        
-        (isLargeScreen ? 40 : 32).h,
-        
-        // Section déconnexion
-        _buildLogoutSection(context, isLargeScreen),
-        
-        (isLargeScreen ? 60 : 40).h,
-        
-        // Footer
-        _buildFooter(isLargeScreen),
-        
-        (isLargeScreen ? 60 : 40).h,
-      ],
-    );
-  }
-
-  Widget _buildProfileSection(bool isLargeScreen, bool isMediumScreen) {
+  Widget _buildProfileCard(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(isLargeScreen ? 28 : 24),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.03),
             blurRadius: 20,
-            offset: Offset(0, 10),
-            spreadRadius: 0,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(isLargeScreen ? 28 : 24),
-          onTap: () {
-            Get.to(ViewInfos());
-          },
+          borderRadius: BorderRadius.circular(24),
+          onTap: () => Get.to(ViewInfos()),
           child: Padding(
-            padding: EdgeInsets.all(isLargeScreen ? 32 : 24),
+            padding: const EdgeInsets.all(24),
             child: Row(
               children: [
-                // Avatar utilisateur
                 Container(
-                  width: isLargeScreen ? 90 : 70,
-                  height: isLargeScreen ? 90 : 70,
+                  width: 70,
+                  height: 70,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
                       colors: [
                         AppColors.color500,
-                        AppColors.color500.withOpacity(0.7),
+                        AppColors.color500.withOpacity(0.8)
                       ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    borderRadius: BorderRadius.circular(isLargeScreen ? 24 : 20),
+                    shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
                         color: AppColors.color500.withOpacity(0.3),
-                        blurRadius: 15,
-                        offset: Offset(0, 8),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.person_outline,
                     color: Colors.white,
-                    size: isLargeScreen ? 40 : 32,
+                    size: 32,
                   ),
                 ),
-                
-                (isLargeScreen ? 28 : 20).w,
-                
-                // Informations utilisateur
+                const SizedBox(width: 20),
                 Expanded(
-                  child: Obx(
-                    () => Utilisateur.currentUser.value != null
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Obx(() {
+                    final user = Utilisateur.currentUser.value;
+                    if (user != null) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          EText(
+                            "${user.nom} ${user.prenom}",
+                            size: 20,
+                            weight: FontWeight.w700,
+                            color: Colors.black87,
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
                             children: [
+                              Icon(Icons.phone_outlined,
+                                  size: 14, color: Colors.grey[500]),
+                              const SizedBox(width: 4),
                               EText(
-                                "${Utilisateur.currentUser.value!.nom} ${Utilisateur.currentUser.value!.prenom}",
-                                size: isLargeScreen ? 26 : 22,
-                                weight: FontWeight.w700,
-                                color: Colors.grey[800],
-                              ),
-                              (isLargeScreen ? 12 : 8).h,
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.phone_outlined,
-                                    color: Colors.grey[600],
-                                    size: isLargeScreen ? 20 : 18,
-                                  ),
-                                  (isLargeScreen ? 10 : 8).w,
-                                  EText(
-                                    "${Utilisateur.currentUser.value!.telephone.indicatif} ${Utilisateur.currentUser.value!.telephone.numero}",
-                                    size: isLargeScreen ? 18 : 16,
-                                    color: Colors.grey[600],
-                                    weight: FontWeight.w500,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              EText(
-                                "Me connecter / M'inscrire",
-                                size: isLargeScreen ? 24 : 20,
-                                weight: FontWeight.w700,
-                                color: AppColors.color500,
-                              ),
-                              (isLargeScreen ? 12 : 8).h,
-                              EText(
-                                "Accédez à votre compte",
-                                size: isLargeScreen ? 16 : 14,
+                                "${user.telephone.indicatif} ${user.telephone.numero}",
+                                size: 14,
                                 color: Colors.grey[600],
+                                weight: FontWeight.w500,
                               ),
                             ],
                           ),
-                  ),
+                        ],
+                      );
+                    } else {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          EText(
+                            "Se connecter",
+                            size: 20,
+                            weight: FontWeight.w700,
+                            color: Colors.black87,
+                          ),
+                          const SizedBox(height: 4),
+                          EText(
+                            "Accédez à votre espace personnel",
+                            size: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ],
+                      );
+                    }
+                  }),
                 ),
-                
-                // Flèche
                 Container(
-                  padding: EdgeInsets.all(isLargeScreen ? 10 : 8),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(
-                    Icons.arrow_forward_ios,
-                    size: isLargeScreen ? 20 : 18,
-                    color: Colors.grey[600],
-                  ),
+                  child: Icon(Icons.arrow_forward_ios_rounded,
+                      size: 16, color: Colors.grey[400]),
                 ),
               ],
             ),
@@ -271,290 +206,73 @@ class Compte extends StatelessWidget {
     );
   }
 
-  Widget _buildEntreprisesSection(bool isLargeScreen, bool isMediumScreen) {
+  Widget _buildEntreprisesCard(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.grey[900]!,
-            Colors.black,
-          ],
-        ),
-        borderRadius: BorderRadius.circular(isLargeScreen ? 28 : 24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 25,
-            offset: Offset(0, 15),
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(isLargeScreen ? 32 : 24),
-        child: isLargeScreen 
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                EText(
-                  "Entreprises",
-                  size: isLargeScreen ? 28 : 24,
-                  weight: FontWeight.w700,
-                  color: AppColors.color500,
-                ),
-                (isLargeScreen ? 16 : 12).h,
-                EText(
-                  "Créez, modifiez et gérez vos entreprises",
-                  size: isLargeScreen ? 18 : 16,
-                  color: Colors.white.withOpacity(0.9),
-                ),
-                (isLargeScreen ? 28 : 20).h,
-                GestureDetector(
-                  onTap: () {
-                    Utilisateur.currentUser.value!.abonnement.isNul ||
-                            DateTime.parse(Utilisateur.currentUser.value!.abonnement!.limite).isBefore(DateTime.now())
-                        ? Get.to(AbonnementsListe())
-                        : Get.to(ViewUser(utilisateur: Utilisateur.currentUser.value!));
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isLargeScreen ? 24 : 20, 
-                      vertical: isLargeScreen ? 16 : 12
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.business_outlined,
-                          color: Colors.black,
-                          size: isLargeScreen ? 20 : 18,
-                        ),
-                        (isLargeScreen ? 10 : 8).w,
-                        EText(
-                          "Gérer mes entreprises",
-                          color: Colors.black,
-                          weight: FontWeight.w700,
-                          size: isLargeScreen ? 18 : 16,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                (isLargeScreen ? 24 : 20).h,
-                // Icône entreprise centrée
-                Center(
-                  child: Container(
-                    width: isLargeScreen ? 100 : 80,
-                    height: isLargeScreen ? 100 : 80,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(isLargeScreen ? 24 : 20),
-                    ),
-                    child: Icon(
-                      Icons.business,
-                      color: Colors.white,
-                      size: isLargeScreen ? 48 : 40,
-                    ),
-                  ),
-                ),
-              ],
-            )
-          : Row(
-              children: [
-                // Contenu textuel
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      EText(
-                        "Entreprises",
-                        size: isLargeScreen ? 28 : 24,
-                        weight: FontWeight.w700,
-                        color: AppColors.color500,
-                      ),
-                      (isLargeScreen ? 16 : 12).h,
-                      EText(
-                        "Créez, modifiez et gérez vos entreprises",
-                        size: isLargeScreen ? 18 : 16,
-                        color: Colors.white.withOpacity(0.9),
-                      ),
-                      (isLargeScreen ? 28 : 20).h,
-                      GestureDetector(
-                        onTap: () {
-                          Utilisateur.currentUser.value!.abonnement.isNul ||
-                                  DateTime.parse(Utilisateur.currentUser.value!.abonnement!.limite).isBefore(DateTime.now())
-                              ? Get.to(AbonnementsListe())
-                              : Get.to(ViewUser(utilisateur: Utilisateur.currentUser.value!));
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: isLargeScreen ? 24 : 20, 
-                            vertical: isLargeScreen ? 16 : 12
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.business_outlined,
-                                color: Colors.black,
-                                size: isLargeScreen ? 20 : 18,
-                              ),
-                              (isLargeScreen ? 10 : 8).w,
-                              EText(
-                                "Gérer mes entreprises",
-                                color: Colors.black,
-                                weight: FontWeight.w700,
-                                size: isLargeScreen ? 18 : 16,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                
-                (isLargeScreen ? 28 : 20).w,
-                
-                // Icône entreprise
-                Container(
-                  width: isLargeScreen ? 100 : 80,
-                  height: isLargeScreen ? 100 : 80,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(isLargeScreen ? 24 : 20),
-                  ),
-                  child: Icon(
-                    Icons.business,
-                    color: Colors.white,
-                    size: isLargeScreen ? 48 : 40,
-                  ),
-                ),
-              ],
-            ),
-      ),
-    );
-  }
-
-  Widget _buildPlusSection(bool isLargeScreen, bool isMediumScreen) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        EText(
-          "Plus",
-          size: isLargeScreen ? 28 : 24,
-          weight: FontWeight.w700,
-          color: Colors.white,
-        ),
-        (isLargeScreen ? 28 : 20).h,
-        
-        _buildPlusElement(
-          icon: Icons.description_outlined,
-          title: "Conditions générales d'utilisation",
-          subtitle: "Lire nos conditions",
-          onTap: () {
-            launchUrl(Uri.parse("https://www.eboite.co/privacy-policy"));
-          },
-          isLargeScreen: isLargeScreen,
-        ),
-        
-        (isLargeScreen ? 20 : 16).h,
-        
-        _buildPlusElement(
-          icon: Icons.security_outlined,
-          title: "Protection de données",
-          subtitle: "Votre vie privée",
-          onTap: () {
-            launchUrl(Uri.parse("https://www.eboite.co/privacy-policy"));
-          },
-          isLargeScreen: isLargeScreen,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPlusElement({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-    required bool isLargeScreen,
-  }) {
-    return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(isLargeScreen ? 24 : 20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 15,
-            offset: Offset(0, 8),
-            spreadRadius: 0,
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(isLargeScreen ? 24 : 20),
-          onTap: onTap,
+          borderRadius: BorderRadius.circular(24),
+          onTap: () {
+            final user = Utilisateur.currentUser.value;
+            if (user != null) {
+              if (user.abonnement.isNul ||
+                  DateTime.parse(user.abonnement!.limite)
+                      .isBefore(DateTime.now())) {
+                Get.to(AbonnementsListe());
+              } else {
+                Get.to(ViewUser(utilisateur: user));
+              }
+            } else {
+              Get.to(Connexion());
+            }
+          },
           child: Padding(
-            padding: EdgeInsets.all(isLargeScreen ? 24 : 20),
+            padding: const EdgeInsets.all(24),
             child: Row(
               children: [
-                // Icône
                 Container(
-                  padding: EdgeInsets.all(isLargeScreen ? 16 : 12),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.color500.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(isLargeScreen ? 20 : 16),
+                    color: Colors.blueGrey[50],
+                    borderRadius: BorderRadius.circular(18),
                   ),
-                  child: Icon(
-                    icon,
-                    color: AppColors.color500,
-                    size: isLargeScreen ? 28 : 24,
-                  ),
+                  child: Icon(Icons.business_rounded,
+                      color: Colors.blueGrey[800], size: 28),
                 ),
-                
-                (isLargeScreen ? 20 : 16).w,
-                
-                // Contenu
+                const SizedBox(width: 20),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       EText(
-                        title,
-                        size: isLargeScreen ? 20 : 18,
-                        weight: FontWeight.w600,
-                        color: Colors.grey[800],
+                        "Mes Entreprises",
+                        size: 18,
+                        weight: FontWeight.w700,
+                        color: Colors.black87,
                       ),
-                      (isLargeScreen ? 6 : 4).h,
+                      const SizedBox(height: 6),
                       EText(
-                        subtitle,
-                        size: isLargeScreen ? 16 : 14,
+                        "Gérez vos activités professionnelles",
+                        size: 14,
                         color: Colors.grey[600],
                       ),
                     ],
                   ),
                 ),
-                
-                // Flèche
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: isLargeScreen ? 20 : 18,
-                  color: Colors.grey[400],
-                ),
+                Icon(Icons.arrow_forward_ios_rounded,
+                    size: 16, color: Colors.grey[400]),
               ],
             ),
           ),
@@ -563,69 +281,135 @@ class Compte extends StatelessWidget {
     );
   }
 
-  Widget _buildLogoutSection(BuildContext context, bool isLargeScreen) {
-    return Obx(
-      () => Utilisateur.currentUser.value == null
-          ? SizedBox.shrink()
-          : SimpleButton(
-            color: const Color.fromARGB(255, 255, 17, 0),
-            onTap: () {
-              Custom.showDialog(TwoOptionsDialog(
-                confirmationText: "Me déconnecter",
-                confirmFunction: () {
-                  FirebaseAuth.instance.signOut();
-                  Utilisateur.currentUser.value = null;
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => Connexion()),
-                    (route) => false,
-                  );
-                  Toasts.success(context, description: "Vous vous êtes déconnecté avec succès");
-                },
-                body: "Voulez-vous vraiment vous déconnecter ?",
-                title: "Déconnexion",
-              ));
-            },
-            
-            child: EText(
-              "Se déconnecter",
-              size: isLargeScreen ? 20 : 18,
-              weight: FontWeight.w600,
-              color: Colors.white,
-            ),
+  Widget _buildMenuSection(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
           ),
+        ],
+      ),
+      child: Column(
+        children: [
+          _buildMenuItem(
+            icon: Icons.description_outlined,
+            title: "Conditions générales",
+            onTap: () =>
+                launchUrl(Uri.parse("https://www.eboite.co/privacy-policy")),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Divider(height: 1, color: Colors.grey[100]),
+          ),
+          _buildMenuItem(
+            icon: Icons.privacy_tip_outlined,
+            title: "Politique de confidentialité",
+            onTap: () =>
+                launchUrl(Uri.parse("https://www.eboite.co/privacy-policy")),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildFooter(bool isLargeScreen) {
-    return Column(
-      children: [
-        // Logo
-        Container(
-          padding: EdgeInsets.all(isLargeScreen ? 28 : 20),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(isLargeScreen ? 24 : 20),
-          ),
-          child: Image(
-            image: AssetImage(Assets.icons("logo-text.png")),
-            height: isLargeScreen ? 45 : 35,
-            color: Colors.white,
+  Widget _buildMenuItem(
+      {required IconData icon,
+      required String title,
+      required VoidCallback onTap}) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          child: Row(
+            children: [
+              Icon(icon, color: Colors.grey[600], size: 24),
+              const SizedBox(width: 16),
+              Expanded(
+                child: EText(
+                  title,
+                  size: 16,
+                  weight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
+              ),
+              Icon(Icons.arrow_forward_ios_rounded,
+                  size: 16, color: Colors.grey[300]),
+            ],
           ),
         ),
-        
-        (isLargeScreen ? 20 : 16).h,
-        
-        // Version
+      ),
+    );
+  }
+
+  Widget _buildLogoutButton(BuildContext context) {
+    return Obx(() {
+      if (Utilisateur.currentUser.value == null) return const SizedBox.shrink();
+      return Center(
+        child: TextButton(
+          onPressed: () {
+            Custom.showDialog(TwoOptionsDialog(
+              confirmationText: "Me déconnecter",
+              confirmFunction: () {
+                FirebaseAuth.instance.signOut();
+                Utilisateur.currentUser.value = null;
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => Connexion()),
+                  (route) => false,
+                );
+                Toasts.success(context, description: "Déconnexion réussie");
+              },
+              body: "Voulez-vous vraiment vous déconnecter ?",
+              title: "Déconnexion",
+            ));
+          },
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.red,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+            backgroundColor: Colors.red.withOpacity(0.05),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.logout_rounded, size: 18),
+              const SizedBox(width: 8),
+              EText("Se déconnecter",
+                  color: Colors.red, weight: FontWeight.w600, size: 15),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _buildFooter() {
+    return Column(
+      children: [
+        Opacity(
+          opacity: 0.3,
+          child: Image(
+            image: AssetImage(Assets.icons("logo-text.png")),
+            height: 24,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 8),
         EText(
           "v1.0.0+4",
-          color: Colors.white.withOpacity(0.7),
-          size: isLargeScreen ? 16 : 14,
+          color: Colors.grey[400],
+          size: 12,
           weight: FontWeight.w500,
         ),
       ],
     );
   }
 }
-
-

@@ -46,26 +46,26 @@ class _HomePageState extends State<HomePage> {
   }
 
   var user = Utilisateur.currentUser.value!;
-  
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: DB
-          .firestore(Collections.utilistateurs)
-          .doc(user.email)
-          .snapshots(),
+      stream:
+          DB.firestore(Collections.utilistateurs).doc(user.email).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {}
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         }
         if (snapshot.data != null && snapshot.data!.data() != null) {
-          Utilisateur.currentUser.value = Utilisateur.fromMap(snapshot.data!.data()!);
-          currentEntreprise.value = Utilisateur.currentUser.value!.entreprises.isEmpty 
-              ? null 
-              : Utilisateur.currentUser.value!.entreprises[0];
+          Utilisateur.currentUser.value =
+              Utilisateur.fromMap(snapshot.data!.data()!);
+          currentEntreprise.value =
+              Utilisateur.currentUser.value!.entreprises.isEmpty
+                  ? null
+                  : Utilisateur.currentUser.value!.entreprises[0];
         }
-        
+
         return Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -75,7 +75,9 @@ class _HomePageState extends State<HomePage> {
             appBar: _buildAppBar(),
             body: Obx(
               () => Utilisateur.currentUser.value!.abonnement.isNul ||
-                      DateTime.parse(Utilisateur.currentUser.value!.abonnement!.limite).isBefore(DateTime.now())
+                      DateTime.parse(
+                              Utilisateur.currentUser.value!.abonnement!.limite)
+                          .isBefore(DateTime.now())
                   ? _buildSubscriptionExpiredView()
                   : Utilisateur.currentUser.value!.entreprises.isEmpty
                       ? _buildNoEntrepriseView()
@@ -130,7 +132,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-        
+
         // Bouton profil
         Container(
           margin: EdgeInsets.only(right: 20),
@@ -200,18 +202,18 @@ class _HomePageState extends State<HomePage> {
                   size: 48,
                 ),
               ),
-              
+
               24.h,
-              
+
               // Titre
               EText(
                 "Abonnement expiré",
                 size: 25,
-              font: Fonts.poppinsBold,
+                font: Fonts.poppinsBold,
               ),
-              
+
               12.h,
-              
+
               // Description
               Text(
                 "Vous n'avez aucun abonnement en cours. Renouvelez votre abonnement pour continuer à utiliser l'application.",
@@ -222,21 +224,19 @@ class _HomePageState extends State<HomePage> {
                   height: 1.4,
                 ),
               ),
-              
+
               32.h,
-              
+
               // Bouton d'action
-             SimpleButton(
-              width: 200,
+              SimpleButton(
+                width: 200,
                 onTap: () {
                   Get.to(AbonnementsListe());
                 },
-               
-               
                 child: EText(
                   "Acheter un abonnement",
                   font: Fonts.poppinsBold,
-               color: Colors.white,
+                  color: Colors.white,
                 ),
               ),
             ],
@@ -275,9 +275,9 @@ class _HomePageState extends State<HomePage> {
                   fit: BoxFit.contain,
                 ),
               ),
-              
+
               24.h,
-              
+
               // Titre
               Text(
                 "Aucune entreprise",
@@ -288,9 +288,9 @@ class _HomePageState extends State<HomePage> {
                   color: Colors.grey[800],
                 ),
               ),
-              
+
               12.h,
-              
+
               // Description
               Text(
                 "Créez votre première entreprise pour commencer à recevoir des retours de vos clients.",
@@ -301,9 +301,9 @@ class _HomePageState extends State<HomePage> {
                   height: 1.4,
                 ),
               ),
-              
+
               32.h,
-              
+
               // Bouton d'action
               Container(
                 width: double.infinity,
@@ -343,23 +343,12 @@ class _HomePageState extends State<HomePage> {
       children: [
         // Contenu principal
         Padding(
-          padding: EdgeInsets.only(
-            top: Utilisateur.currentUser.value!.entreprises.length < 2 ? 0 : 90.0,
-          ),
+          padding: EdgeInsets.only(),
           child: Obx(() => Messages(
-            key: Key(currentEntreprise.value!.id),
-            currentEntreprise: currentEntreprise.value!,
-          )),
+                key: Key(currentEntreprise.value!.id),
+                currentEntreprise: currentEntreprise.value!,
+              )),
         ),
-        
-        // Sélecteur d'entreprises (si plusieurs entreprises)
-        if (Utilisateur.currentUser.value!.entreprises.length >= 2)
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: _buildEntrepriseSelector(),
-          ),
       ],
     );
   }
@@ -383,12 +372,13 @@ class _HomePageState extends State<HomePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Titre de la section
-     
+
           SingleChildScrollView(
             physics: BouncingScrollPhysics(),
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: Utilisateur.currentUser.value!.entreprises.map((element) {
+              children:
+                  Utilisateur.currentUser.value!.entreprises.map((element) {
                 return Obx(
                   () => GestureDetector(
                     onTap: () {
@@ -397,7 +387,8 @@ class _HomePageState extends State<HomePage> {
                     child: Container(
                       margin: EdgeInsets.only(right: 12),
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         decoration: BoxDecoration(
                           color: currentEntreprise.value!.id == element.id
                               ? AppColors.color500
@@ -466,9 +457,9 @@ class _HomePageState extends State<HomePage> {
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                
+
                 24.h,
-                
+
                 // Titre
                 Text(
                   "Filtrer les messages",
@@ -478,11 +469,12 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.grey[800],
                   ),
                 ),
-                
+
                 24.h,
-                
+
                 // Options de filtrage
-                ...["Suggestion", "Plainte", "Idée", "Appreciation"].map((element) {
+                ...["Suggestion", "Plainte", "Idée", "Appreciation"]
+                    .map((element) {
                   return Container(
                     margin: EdgeInsets.only(bottom: 12),
                     decoration: BoxDecoration(
@@ -508,13 +500,14 @@ class _HomePageState extends State<HomePage> {
                       ),
                       activeColor: AppColors.color500,
                       checkColor: Colors.white,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     ),
                   );
                 }).toList(),
-                
+
                 24.h,
-                
+
                 // Bouton de confirmation
                 Container(
                   width: double.infinity,
@@ -540,7 +533,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                
+
                 16.h,
               ],
             ),
@@ -557,7 +550,8 @@ class _HomePageState extends State<HomePage> {
     String id = "";
 
     Utilisateur.currentUser.value!.abonnement.isNul ||
-            DateTime.parse(Utilisateur.currentUser.value!.abonnement!.limite).isBefore(DateTime.now())
+            DateTime.parse(Utilisateur.currentUser.value!.abonnement!.limite)
+                .isBefore(DateTime.now())
         ? Get.to(AbonnementsListe())
         : null;
 
@@ -565,17 +559,21 @@ class _HomePageState extends State<HomePage> {
       Custom.showDialog(Dialog(
         child: Padding(
           padding: const EdgeInsets.all(12.0),
-          child: EColumn(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          child:
+              EColumn(crossAxisAlignment: CrossAxisAlignment.center, children: [
             BigTitleText("Abonnement"),
             12.h,
             ETextRich(textSpans: [
-              ETextSpan(text: "Avec votre abonnement Standard, vous pouvez créer "),
-              ETextSpan(text: "une seule entreprise.", color: AppColors.color500),
+              ETextSpan(
+                  text: "Avec votre abonnement Standard, vous pouvez créer "),
+              ETextSpan(
+                  text: "une seule entreprise.", color: AppColors.color500),
             ]),
             ETextRich(
               textSpans: [
                 ETextSpan(text: "Pour créer plusieurs entreprises, passez à "),
-                ETextSpan(text: "l'abonnement Premium.", color: AppColors.color500)
+                ETextSpan(
+                    text: "l'abonnement Premium.", color: AppColors.color500)
               ],
             ),
             12.h,
