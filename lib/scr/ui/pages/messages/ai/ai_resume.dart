@@ -22,7 +22,7 @@ class _AiResumeState extends State<AiResume> {
   final RxBool _isInitializing = true.obs;
 
   List<Message> _allMessages = [];
-  final String _apiKey = "AIzaSyA__L8mhfYMVLd9M3G1WccMPoqzeNomJIE";
+  String? _apiKey;
 
   final List<String> _suggestions = [
     "Fais-moi un résumé des avis",
@@ -34,7 +34,13 @@ class _AiResumeState extends State<AiResume> {
   @override
   void initState() {
     super.initState();
+    getGeminiApiKey();
     _fetchMessages();
+  }
+
+  Future<String?> getGeminiApiKey() async {
+    var q = await DB.firestore(Collections.keys).doc('geminiApiKey').get();
+    _apiKey = q != null ? q.data()!['key'] : null;
   }
 
   Future<void> _fetchMessages() async {
@@ -98,15 +104,18 @@ class _AiResumeState extends State<AiResume> {
         _allMessages.length > 50 ? _allMessages.sublist(0, 50) : _allMessages;
 
     for (var msg in messagesToAnalyze) {
-      contextBuffer.writeln("- [${msg.categorie}] ${msg.message}");
+      contextBuffer.writeln("- [${msg.categorie}] ${msg.siege} ${msg.message}");
     }
 
-    contextBuffer.writeln("\nQuestion de l'utilisateur: $query");
     contextBuffer.writeln(
-        "Réponds de manière concise, professionnelle et utile en te basant UNIQUEMENT sur les avis ci-dessus.");
+        "\nQuestion de l'utilisateur (Responsable de l'entreprise): $query");
+    contextBuffer.writeln(
+        "Tu es un assistant expert pour le chef d'entreprise. Ton rôle est de fournir des informations stratégiques et utiles pour la gestion de son établissement. "
+        "Réponds de manière professionnelle, concise et orientée action, comme si tu t'adressais à un décideur. Soit bref et va à l'essentiel"
+        "Base-toi UNIQUEMENT sur les avis ci-dessus.");
 
     final url = Uri.parse(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$_apiKey');
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$_apiKey');
 
     final response = await http.post(
       url,
