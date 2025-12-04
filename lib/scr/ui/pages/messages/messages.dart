@@ -413,6 +413,7 @@ class _MessagesState extends State<Messages> {
                   constraints: const BoxConstraints(maxWidth: 100),
                   child: EText(
                     _currentEntreprise.value.nom,
+                    maxLines: 1,
                     size: 17,
                   ),
                 ),

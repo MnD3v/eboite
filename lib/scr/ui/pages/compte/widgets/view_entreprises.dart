@@ -432,6 +432,7 @@ class ViewUser extends StatelessWidget {
       user: utilisateur,
       notificationsSettings: element.notificationsSettings,
       existingLogoUrl: element.logo,
+      isProject: element.isProject,
     ));
   }
 
